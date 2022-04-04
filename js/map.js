@@ -128,3 +128,11 @@ const generateOfferObject = (i) => {
 
   return offerObject;
 };
+
+
+const offersArray = [];
+
+for (let i = 0; i < ADS_COUNT; i++) {
+  const offerObject = generateOfferObject(i);
+  offersArray.push(offerObject);
+}
