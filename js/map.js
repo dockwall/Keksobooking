@@ -67,3 +67,18 @@ const getRandomFromArray = (array) => {
 };
 
 const getRandomAddress = () => `${getRandomFromInterval(offerOptions.LOCATION_X)}, ${getRandomFromInterval(offerOptions.LOCATION_Y)}`;
+
+const getShuffledArray = (array) => {
+  const originalArray = array.slice();
+  const randomFeaturesArray = [];
+  const randomLength = Math.floor(originalArray.length * Math.random() + 1);
+
+  for (let i = 0; i < randomLength; i++) {
+    const randomIndex = Math.floor(originalArray.length * Math.random());
+    const arrayElement = originalArray[randomIndex];
+    originalArray.splice(randomIndex, 1);
+    randomFeaturesArray.push(arrayElement);
+  }
+
+  return randomFeaturesArray;
+};
