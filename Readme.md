@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
-* Студент: [Дмитрий Метельков](https://up.htmlacademy.ru/javascript/14/user/512127).
-* Наставник: `Неизвестно`.
+- Студент: dockwall
+- Наставник: Самостоятельно
 
 ---
 
