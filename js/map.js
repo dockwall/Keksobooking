@@ -66,8 +66,6 @@ const getRandomFromArray = (array) => {
   return array[randomIndex];
 };
 
-const getRandomAddress = () => `${getRandomFromInterval(offerOptions.LOCATION_X)}, ${getRandomFromInterval(offerOptions.LOCATION_Y)}`;
-
 const getRandomArray = (array) => {
   const originalArray = array.slice();
   const randomArray = [];
@@ -99,3 +97,34 @@ const getShuffledArray = (array) => {
 
 const mapDOM = document.querySelector('.map');
 mapDOM.classList.remove('map--faded');
+
+const generateOfferObject = (i) => {
+  const randomLocationX = getRandomFromInterval(offerOptions.LOCATION_X);
+  const randomLocationY = getRandomFromInterval(offerOptions.LOCATION_Y);
+
+  const offerObject = {
+    author: {
+      avatar: `img/avatars/user0${i}.png`,
+    },
+
+    offer: {
+      title: offerOptions.TITLES[i],
+      address: `${randomLocationX}, ${randomLocationY}`,
+      price: getRandomFromInterval(offerOptions.PRICES),
+      type: getRandomFromArray(offerOptions.TYPES),
+      rooms: getRandomFromInterval(offerOptions.ROOMS),
+      guests: getRandomFromInterval(offerOptions.GUESTS),
+      checkin: getRandomFromArray(offerOptions.TIMES),
+      checkout: getRandomFromArray(offerOptions.TIMES),
+      features: getRandomArray(offerOptions.FEATURES),
+      desrciption: '',
+      photos: getShuffledArray(offerOptions.PHOTOS),
+      location: {
+        x: randomLocationX,
+        y: randomLocationY,
+      },
+    },
+  };
+
+  return offerObject;
+};
