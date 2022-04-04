@@ -82,3 +82,6 @@ const getShuffledArray = (array) => {
 
   return randomFeaturesArray;
 };
+
+const mapDOM = document.querySelector('.map');
+mapDOM.classList.remove('map--faded');
