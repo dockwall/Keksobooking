@@ -2,6 +2,11 @@
 
 const ADS_COUNT = 8;
 
+const MAP_PIN_CSS = {
+  WIDTH: 50,
+  HEIGHT: 70,
+};
+
 const offerOptions = {
   TITLES: [
     'Большая уютная квартира',
@@ -136,3 +141,18 @@ for (let i = 0; i < ADS_COUNT; i++) {
   const offerObject = generateOfferObject(i);
   offersArray.push(offerObject);
 }
+
+const fullTemplateDOM = document.querySelector('template').content;
+
+const createMapPin = (offerObject) => {
+  const templateMapPin = fullTemplateDOM.querySelector('.map__pin');
+  const pinElement = templateMapPin.cloneNode('true');
+  const pinElementImg = pinElement.querySelector('img');
+
+  pinElement.style.left = `${offerObject.offer.location.x - (MAP_PIN_CSS.WIDTH / 2)}px`;
+  pinElement.style.top = `${offerObject.offer.location.y - MAP_PIN_CSS.HEIGHT}px`;
+  pinElementImg.src = offerObject.author.avatar;
+  pinElementImg.alt = offerObject.offer.title;
+
+  return pinElement;
+};
