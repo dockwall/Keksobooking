@@ -158,7 +158,7 @@ const createMapPinDOM = (offerObject) => {
 
 const mapPinsDOMArray = [];
 
-for (let i = 0; i < offersArray.length; i++) {
-  const mapPinDOMElement = createMapPinDOM(offersArray[i]);
+offersArray.forEach(element => {
+  const mapPinDOMElement = createMapPinDOM(element);
   mapPinsDOMArray.push(mapPinDOMElement);
-}
+});
