@@ -7,7 +7,7 @@ const MAP_PIN_CSS = {
   HEIGHT: 70,
 };
 
-const offerOptions = {
+const OFFER_OPTIONS = {
   TITLES: [
     'Большая уютная квартира',
     'Маленькая неуютная квартира',
@@ -104,8 +104,8 @@ const mapDOM = document.querySelector('.map');
 mapDOM.classList.remove('map--faded');
 
 const generateOfferObject = (i) => {
-  const randomLocationX = getRandomFromInterval(offerOptions.LOCATION_X);
-  const randomLocationY = getRandomFromInterval(offerOptions.LOCATION_Y);
+  const randomLocationX = getRandomFromInterval(OFFER_OPTIONS.LOCATION_X);
+  const randomLocationY = getRandomFromInterval(OFFER_OPTIONS.LOCATION_Y);
 
   const offerObject = {
     author: {
@@ -113,17 +113,17 @@ const generateOfferObject = (i) => {
     },
 
     offer: {
-      title: offerOptions.TITLES[i],
+      title: OFFER_OPTIONS.TITLES[i],
       address: `${randomLocationX}, ${randomLocationY}`,
-      price: getRandomFromInterval(offerOptions.PRICES),
-      type: getRandomFromArray(offerOptions.TYPES),
-      rooms: getRandomFromInterval(offerOptions.ROOMS),
-      guests: getRandomFromInterval(offerOptions.GUESTS),
-      checkin: getRandomFromArray(offerOptions.TIMES),
-      checkout: getRandomFromArray(offerOptions.TIMES),
-      features: getRandomArray(offerOptions.FEATURES),
+      price: getRandomFromInterval(OFFER_OPTIONS.PRICES),
+      type: getRandomFromArray(OFFER_OPTIONS.TYPES),
+      rooms: getRandomFromInterval(OFFER_OPTIONS.ROOMS),
+      guests: getRandomFromInterval(OFFER_OPTIONS.GUESTS),
+      checkin: getRandomFromArray(OFFER_OPTIONS.TIMES),
+      checkout: getRandomFromArray(OFFER_OPTIONS.TIMES),
+      features: getRandomArray(OFFER_OPTIONS.FEATURES),
       desrciption: '',
-      photos: getShuffledArray(offerOptions.PHOTOS),
+      photos: getShuffledArray(OFFER_OPTIONS.PHOTOS),
       location: {
         x: randomLocationX,
         y: randomLocationY,
@@ -144,7 +144,7 @@ for (let i = 0; i < ADS_COUNT; i++) {
 
 const fullTemplateDOM = document.querySelector('template').content;
 
-const createMapPin = (offerObject) => {
+const createMapPinDOM = (offerObject) => {
   const templateMapPin = fullTemplateDOM.querySelector('.map__pin');
   const pinElement = templateMapPin.cloneNode('true');
   const pinElementImg = pinElement.querySelector('img');
