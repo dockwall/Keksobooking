@@ -134,7 +134,6 @@ const generateOfferObject = (i) => {
   return offerObject;
 };
 
-
 const offersArray = [];
 
 for (let i = 0; i < ADS_COUNT; i++) {
@@ -156,3 +155,10 @@ const createMapPinDOM = (offerObject) => {
 
   return pinElement;
 };
+
+const mapPinsDOMArray = [];
+
+for (let i = 0; i < offersArray.length; i++) {
+  const mapPinDOMElement = createMapPinDOM(offersArray[i]);
+  mapPinsDOMArray.push(mapPinDOMElement);
+}
