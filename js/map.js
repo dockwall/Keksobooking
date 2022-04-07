@@ -209,6 +209,8 @@ offersArray.forEach(element => {
   mapPinsDOMArray.push(mapPinDOMElement);
 });
 
+const offerCardDOMELement = createOfferCardDOM(offersArray[0]);
+
 const renderMapPins = (pinsArray) => {
   const pinsFragment = document.createDocumentFragment();
   pinsArray.forEach(element => pinsFragment.appendChild(element));
@@ -216,5 +218,9 @@ const renderMapPins = (pinsArray) => {
   mapDOM.querySelector('.map__pins').appendChild(pinsFragment);
 };
 
+const renderOfferCard = (offerCardDOM) => {
+  mapDOM.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', offerCardDOM);
+};
+
 renderMapPins(mapPinsDOMArray);
-createOfferCardDOM(offersArray[0]);
+renderOfferCard(offerCardDOMELement);
