@@ -72,6 +72,7 @@ const TYPES_DICT = {
 };
 
 const mapDOM = document.querySelector('.map');
+const formDOM = document.querySelector('.ad-form');
 
 const getRandomFromInterval = (interval) => Math.floor((interval.MAX - interval.MIN + 1) * Math.random()) + interval.MIN;
 
@@ -109,8 +110,9 @@ const getShuffledArray = (array) => {
   return shuffledArray;
 };
 
-const showMapDOM = () => {
+const setActiveState = () => {
   mapDOM.classList.remove('map--faded');
+  formDOM.classList.remove('ad-form--disabled');
 };
 
 const generateOfferObject = (i) => {
