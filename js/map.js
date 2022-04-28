@@ -73,6 +73,7 @@ const TYPES_DICT = {
 
 const mapDOM = document.querySelector('.map');
 const formDOM = document.querySelector('.ad-form');
+const formFieldsetsDOM = formDOM.querySelectorAll('fieldset');
 
 const getRandomFromInterval = (interval) => Math.floor((interval.MAX - interval.MIN + 1) * Math.random()) + interval.MIN;
 
@@ -113,6 +114,10 @@ const getShuffledArray = (array) => {
 const setActiveState = () => {
   mapDOM.classList.remove('map--faded');
   formDOM.classList.remove('ad-form--disabled');
+
+  formFieldsetsDOM.forEach(element => {
+    element.removeAttribute('disabled');
+  });
 };
 
 const generateOfferObject = (i) => {
