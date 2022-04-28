@@ -71,6 +71,8 @@ const TYPES_DICT = {
   bungalo: 'Бунгало',
 };
 
+const mapDOM = document.querySelector('.map');
+
 const getRandomFromInterval = (interval) => Math.floor((interval.MAX - interval.MIN + 1) * Math.random()) + interval.MIN;
 
 const getRandomFromArray = (array) => {
@@ -107,8 +109,9 @@ const getShuffledArray = (array) => {
   return shuffledArray;
 };
 
-const mapDOM = document.querySelector('.map');
-mapDOM.classList.remove('map--faded');
+const showMapDOM = () => {
+  mapDOM.classList.remove('map--faded');
+};
 
 const generateOfferObject = (i) => {
   const randomLocationX = getRandomFromInterval(OFFER_OPTIONS.LOCATION_X);
@@ -221,6 +224,3 @@ const renderMapPins = (pinsArray) => {
 const renderOfferCard = (offerCardDOM) => {
   mapDOM.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', offerCardDOM);
 };
-
-renderMapPins(mapPinsDOMArray);
-renderOfferCard(offerCardDOMELement);
