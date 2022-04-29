@@ -74,6 +74,7 @@ const TYPES_DICT = {
 const mapDOM = document.querySelector('.map');
 const formDOM = document.querySelector('.ad-form');
 const formFieldsetsDOM = formDOM.querySelectorAll('fieldset');
+const mainMapPinDOM = mapDOM.querySelector('.map__pin--main');
 
 const getRandomFromInterval = (interval) => Math.floor((interval.MAX - interval.MIN + 1) * Math.random()) + interval.MIN;
 
@@ -111,7 +112,7 @@ const getShuffledArray = (array) => {
   return shuffledArray;
 };
 
-const setActiveState = () => {
+const onMainMapPinMouseup = () => {
   mapDOM.classList.remove('map--faded');
   formDOM.classList.remove('ad-form--disabled');
 
@@ -231,3 +232,5 @@ const renderMapPins = (pinsArray) => {
 const renderOfferCard = (offerCardDOM) => {
   mapDOM.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', offerCardDOM);
 };
+
+mainMapPinDOM.addEventListener('mouseup', onMainMapPinMouseup);
