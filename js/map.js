@@ -7,6 +7,12 @@ const MAP_PIN_CSS = {
   HEIGHT: 70,
 };
 
+const MAIN_MAP_PIN_SIZE = {
+  WIDTH: 65,
+  HEIGHT_INACTIVE: 65,
+  HEIGHT_ACTIVE: 81,
+};
+
 const OFFER_OPTIONS = {
   TITLES: [
     'Большая уютная квартира',
@@ -74,7 +80,9 @@ const TYPES_DICT = {
 const mapDOM = document.querySelector('.map');
 const formDOM = document.querySelector('.ad-form');
 const formFieldsetsDOM = formDOM.querySelectorAll('fieldset');
+const addressFieldsetDOM = formDOM.querySelector('#address');
 const mainMapPinDOM = mapDOM.querySelector('.map__pin--main');
+
 
 const getRandomFromInterval = (interval) => Math.floor((interval.MAX - interval.MIN + 1) * Math.random()) + interval.MIN;
 
@@ -112,13 +120,30 @@ const getShuffledArray = (array) => {
   return shuffledArray;
 };
 
-const onMainMapPinMouseup = () => {
+const setActiveState = () => {
   mapDOM.classList.remove('map--faded');
   formDOM.classList.remove('ad-form--disabled');
 
   formFieldsetsDOM.forEach(element => {
     element.removeAttribute('disabled');
   });
+};
+
+const setInactiveAddress = () => {
+  const inactiveMainPinCenterY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_INACTIVE / 2);
+  const inactiveMainPinCenterX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
+  addressFieldsetDOM.value = `${inactiveMainPinCenterY}, ${inactiveMainPinCenterX}`;
+};
+
+const setActiveAddress = () => {
+  const activeMainPinPointY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_ACTIVE);
+  const activeMainPinPointX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
+  addressFieldsetDOM.value = `${activeMainPinPointY}, ${activeMainPinPointX}`;
+};
+
+const onMainMapPinMouseup = () => {
+  setActiveState();
+  setActiveAddress();
 };
 
 const generateOfferObject = (i) => {
@@ -233,4 +258,5 @@ const renderOfferCard = (offerCardDOM) => {
   mapDOM.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', offerCardDOM);
 };
 
+setInactiveAddress();
 mainMapPinDOM.addEventListener('mouseup', onMainMapPinMouseup);
