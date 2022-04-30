@@ -78,13 +78,20 @@ const TYPES_DICT = {
 };
 
 const mapDOM = document.querySelector('.map');
+const mainMapPinDOM = mapDOM.querySelector('.map__pin--main');
 const formDOM = document.querySelector('.ad-form');
 const formFieldsetsDOM = formDOM.querySelectorAll('fieldset');
 const addressFieldsetDOM = formDOM.querySelector('#address');
-const mainMapPinDOM = mapDOM.querySelector('.map__pin--main');
+const fullTemplateDOM = document.querySelector('template').content;
+const templateMapPin = fullTemplateDOM.querySelector('.map__pin');
+const templateOfferCard = fullTemplateDOM.querySelector('.map__card');
+const templateOfferCardPhoto = templateOfferCard.querySelector('.popup__photos').querySelector('img');
+const offersArray = [];
+const mapPinsDOMArray = [];
 
-
-const getRandomFromInterval = (interval) => Math.floor((interval.MAX - interval.MIN + 1) * Math.random()) + interval.MIN;
+const getRandomFromInterval = (interval) => {
+  return Math.floor((interval.MAX - interval.MIN + 1) * Math.random()) + interval.MIN;
+};
 
 const getRandomFromArray = (array) => {
   const randomIndex = Math.floor(array.length * Math.random());
@@ -128,8 +135,9 @@ const setActiveState = () => {
     element.removeAttribute('disabled');
   });
 
+  fillOffersArray();
+  fillMapPinsDOMArray();
   renderMapPins(mapPinsDOMArray);
-  renderOfferCard(offerCardDOMELement);
 };
 
 const setInactiveAddress = () => {
@@ -180,19 +188,14 @@ const generateOfferObject = (i) => {
   return offerObject;
 };
 
-const offersArray = [];
+const fillOffersArray = () => {
+  for (let i = 0; i < ADS_COUNT; i++) {
+    const offerObject = generateOfferObject(i);
+    offersArray.push(offerObject);
+  }
+};
 
-for (let i = 0; i < ADS_COUNT; i++) {
-  const offerObject = generateOfferObject(i);
-  offersArray.push(offerObject);
-}
-
-const fullTemplateDOM = document.querySelector('template').content;
-const templateMapPin = fullTemplateDOM.querySelector('.map__pin');
-const templateOfferCard = fullTemplateDOM.querySelector('.map__card');
-const templateOfferCardPhoto = templateOfferCard.querySelector('.popup__photos').querySelector('img');
-
-const createMapPinDOM = (offerObject) => {
+const generateMapPinDOM = (offerObject) => {
   const pinElement = templateMapPin.cloneNode('true');
   const pinElementImg = pinElement.querySelector('img');
 
@@ -202,6 +205,13 @@ const createMapPinDOM = (offerObject) => {
   pinElementImg.alt = offerObject.offer.title;
 
   return pinElement;
+};
+
+const fillMapPinsDOMArray = () => {
+  offersArray.forEach(element => {
+    const mapPinDOMElement = generateMapPinDOM(element);
+    mapPinsDOMArray.push(mapPinDOMElement);
+  });
 };
 
 const createOfferCardDOM = (offerObject) => {
@@ -240,15 +250,6 @@ const createOfferCardDOM = (offerObject) => {
 
   return offerCardElement;
 };
-
-const mapPinsDOMArray = [];
-
-offersArray.forEach(element => {
-  const mapPinDOMElement = createMapPinDOM(element);
-  mapPinsDOMArray.push(mapPinDOMElement);
-});
-
-const offerCardDOMELement = createOfferCardDOM(offersArray[0]);
 
 const renderMapPins = (pinsArray) => {
   const pinsFragment = document.createDocumentFragment();
