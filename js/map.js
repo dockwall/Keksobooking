@@ -127,6 +127,9 @@ const setActiveState = () => {
   formFieldsetsDOM.forEach(element => {
     element.removeAttribute('disabled');
   });
+
+  renderMapPins(mapPinsDOMArray);
+  renderOfferCard(offerCardDOMELement);
 };
 
 const setInactiveAddress = () => {
