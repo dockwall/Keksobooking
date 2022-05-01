@@ -155,6 +155,8 @@ const setActiveAddress = () => {
 const onMainMapPinMouseup = () => {
   setActiveState();
   setActiveAddress();
+  mapDOM.addEventListener('click', onMapPinClick);
+  mainMapPinDOM.removeEventListener('mouseup', onMainMapPinMouseup);
 };
 
 const generateOfferObject = (i) => {
@@ -258,8 +260,37 @@ const renderMapPins = (pinsArray) => {
   mapDOM.querySelector('.map__pins').appendChild(pinsFragment);
 };
 
+const getOfferIndex = (evt) => {
+  let indexOfferObject;
+  const parentNode = evt.target.parentNode;
+
+  if (evt.target.nodeName === 'IMG' && parentNode.classList.value === 'map__pin') {
+    indexOfferObject = mapPinsDOMArray.indexOf(parentNode);
+  } else if (evt.target.nodeName === 'BUTTON' && evt.target.classList.value === 'map__pin') {
+    indexOfferObject = mapPinsDOMArray.indexOf(evt.target);
+  }
+
+  return indexOfferObject;
+};
+
 const renderOfferCard = (offerCardDOM) => {
   mapDOM.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', offerCardDOM);
+};
+
+const onMapPinClick = (evt) => {
+  const indexOfferObject = getOfferIndex(evt);
+
+  if (indexOfferObject !== undefined) {
+    const lastCardPopup = mapDOM.querySelector('.popup');
+
+    if (lastCardPopup) {
+      lastCardPopup.remove();
+    }
+
+    const offerObject = offersArray[indexOfferObject];
+    const offerCardElement = createOfferCardDOM(offerObject);
+    renderOfferCard(offerCardElement);
+  }
 };
 
 setInactiveAddress();
