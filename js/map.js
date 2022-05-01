@@ -277,6 +277,10 @@ const renderOfferCard = (offerCardDOM) => {
   mapDOM.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', offerCardDOM);
 };
 
+const onCloseOfferCardButtonClick = (evt) => {
+  evt.target.parentNode.remove();
+};
+
 const onMapPinClick = (evt) => {
   const indexOfferObject = getOfferIndex(evt);
 
@@ -289,6 +293,10 @@ const onMapPinClick = (evt) => {
 
     const offerObject = offersArray[indexOfferObject];
     const offerCardElement = createOfferCardDOM(offerObject);
+    const closePopupButton = offerCardElement.querySelector('.popup__close');
+
+    closePopupButton.addEventListener('click', onCloseOfferCardButtonClick);
+
     renderOfferCard(offerCardElement);
   }
 };
