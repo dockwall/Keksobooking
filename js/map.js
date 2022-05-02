@@ -82,6 +82,10 @@ const mainMapPinDOM = mapDOM.querySelector('.map__pin--main');
 const formDOM = document.querySelector('.ad-form');
 const formFieldsetsDOM = formDOM.querySelectorAll('fieldset');
 const addressFieldsetDOM = formDOM.querySelector('#address');
+const typeFieldsetDOM = formDOM.querySelector('#type');
+const priceFieldsetDOM = formDOM.querySelector('#price');
+const timeInFieldsetDOM = formDOM.querySelector('#timein');
+const timeOutFieldsetDOM = formDOM.querySelector('#timeout');
 const fullTemplateDOM = document.querySelector('template').content;
 const templateMapPin = fullTemplateDOM.querySelector('.map__pin');
 const templateOfferCard = fullTemplateDOM.querySelector('.map__card');
@@ -138,6 +142,11 @@ const setActiveState = () => {
   fillOffersArray();
   fillMapPinsDOMArray();
   renderMapPins(mapPinsDOMArray);
+
+  mapDOM.addEventListener('click', onMapPinClick);
+  typeFieldsetDOM.addEventListener('change', onTypeFieldChange);
+  timeInFieldsetDOM.addEventListener('change', onTimeInFieldChange);
+  timeOutFieldsetDOM.addEventListener('change', onTimeOutFieldChange);
 };
 
 const setInactiveAddress = () => {
@@ -155,7 +164,7 @@ const setActiveAddress = () => {
 const onMainMapPinMouseup = () => {
   setActiveState();
   setActiveAddress();
-  mapDOM.addEventListener('click', onMapPinClick);
+
   mainMapPinDOM.removeEventListener('mouseup', onMainMapPinMouseup);
 };
 
@@ -299,6 +308,43 @@ const onMapPinClick = (evt) => {
 
     renderOfferCard(offerCardElement);
   }
+};
+
+const onTypeFieldChange = () => {
+  let minPrice;
+  switch (typeFieldsetDOM.value) {
+    case 'bungalo':
+      minPrice = 0;
+      priceFieldsetDOM.min = minPrice;
+      priceFieldsetDOM.placeholder = minPrice;
+      break;
+
+    case 'flat':
+      minPrice = 1000;
+      priceFieldsetDOM.min = minPrice;
+      priceFieldsetDOM.placeholder = minPrice;
+      break;
+
+    case 'house':
+      minPrice = 5000;
+      priceFieldsetDOM.min = minPrice;
+      priceFieldsetDOM.placeholder = minPrice;
+      break;
+
+    case 'palace':
+      minPrice = 10000;
+      priceFieldsetDOM.min = minPrice;
+      priceFieldsetDOM.placeholder = minPrice;
+      break;
+  }
+};
+
+const onTimeInFieldChange = () => {
+  timeOutFieldsetDOM.value = timeInFieldsetDOM.value;
+};
+
+const onTimeOutFieldChange = () => {
+  timeInFieldsetDOM.value = timeOutFieldsetDOM.value;
 };
 
 setInactiveAddress();
