@@ -81,11 +81,13 @@ const mapDOM = document.querySelector('.map');
 const mainMapPinDOM = mapDOM.querySelector('.map__pin--main');
 const formDOM = document.querySelector('.ad-form');
 const formFieldsetsDOM = formDOM.querySelectorAll('fieldset');
-const addressFieldsetDOM = formDOM.querySelector('#address');
-const typeFieldsetDOM = formDOM.querySelector('#type');
-const priceFieldsetDOM = formDOM.querySelector('#price');
-const timeInFieldsetDOM = formDOM.querySelector('#timein');
-const timeOutFieldsetDOM = formDOM.querySelector('#timeout');
+const addressFieldDOM = formDOM.querySelector('#address');
+const typeFieldDOM = formDOM.querySelector('#type');
+const priceFieldDOM = formDOM.querySelector('#price');
+const timeInFieldDOM = formDOM.querySelector('#timein');
+const timeOutFieldDOM = formDOM.querySelector('#timeout');
+const roomsCountFieldDOM = formDOM.querySelector('#room_number');
+const capacityFieldDOM = formDOM.querySelector('#capacity');
 const fullTemplateDOM = document.querySelector('template').content;
 const templateMapPin = fullTemplateDOM.querySelector('.map__pin');
 const templateOfferCard = fullTemplateDOM.querySelector('.map__card');
@@ -144,28 +146,32 @@ const setActiveState = () => {
   renderMapPins(mapPinsDOMArray);
 
   mapDOM.addEventListener('click', onMapPinClick);
-  typeFieldsetDOM.addEventListener('change', onTypeFieldChange);
-  timeInFieldsetDOM.addEventListener('change', onTimeInFieldChange);
-  timeOutFieldsetDOM.addEventListener('change', onTimeOutFieldChange);
+  typeFieldDOM.addEventListener('change', onTypeFieldChange);
+  setMinimalPrice(typeFieldDOM.value);
+
+  timeInFieldDOM.addEventListener('change', onTimeInFieldChange);
+  timeOutFieldDOM.addEventListener('change', onTimeOutFieldChange);
+
+  roomsCountFieldDOM.addEventListener('change', onRoomsCountFieldChange);
+  capacityFieldDOM.addEventListener('change', onCapacityFieldChange);
+
+  const invalidCapacityValues = getInvalidCapacities(roomsCountFieldDOM.value);
+  setCapacityFieldCustomValidity(invalidCapacityValues);
+  disableInvalidCapacities(invalidCapacityValues);
+  highlightInvalidField(capacityFieldDOM);
+
 };
 
 const setInactiveAddress = () => {
   const inactiveMainPinCenterY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_INACTIVE / 2);
   const inactiveMainPinCenterX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
-  addressFieldsetDOM.value = `${inactiveMainPinCenterY}, ${inactiveMainPinCenterX}`;
+  addressFieldDOM.value = `${inactiveMainPinCenterY}, ${inactiveMainPinCenterX}`;
 };
 
 const setActiveAddress = () => {
   const activeMainPinPointY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_ACTIVE);
   const activeMainPinPointX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
-  addressFieldsetDOM.value = `${activeMainPinPointY}, ${activeMainPinPointX}`;
-};
-
-const onMainMapPinMouseup = () => {
-  setActiveState();
-  setActiveAddress();
-
-  mainMapPinDOM.removeEventListener('mouseup', onMainMapPinMouseup);
+  addressFieldDOM.value = `${activeMainPinPointY}, ${activeMainPinPointX}`;
 };
 
 const generateOfferObject = (i) => {
@@ -286,8 +292,116 @@ const renderOfferCard = (offerCardDOM) => {
   mapDOM.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', offerCardDOM);
 };
 
-const onCloseOfferCardButtonClick = (evt) => {
-  evt.target.parentNode.remove();
+const setMinimalPrice = (typeValue) => {
+  let minPrice;
+
+  switch (typeValue) {
+    case 'bungalo':
+      minPrice = 0;
+      break;
+
+    case 'flat':
+      minPrice = 1000;
+      break;
+
+    case 'house':
+      minPrice = 5000;
+      break;
+
+    case 'palace':
+      minPrice = 10000;
+      break;
+  }
+
+  priceFieldDOM.min = minPrice;
+  priceFieldDOM.placeholder = minPrice;
+};
+
+const disableInvalidCapacities = (invalidValues) => {
+  for (let i = 0; i < capacityFieldDOM.children.length; i++) {
+    if (invalidValues.includes(capacityFieldDOM.children[i].value)) {
+      capacityFieldDOM.children[i].setAttribute('disabled', '');
+      capacityFieldDOM.children[i].style.backgroundColor = 'silver';
+    } else {
+      capacityFieldDOM.children[i].removeAttribute('disabled');
+      capacityFieldDOM.children[i].removeAttribute('style');
+    }
+  }
+
+};
+
+const getInvalidCapacities = (roomsCount) => {
+  let invalidCapacities;
+
+  switch (roomsCount) {
+    case '1':
+      invalidCapacities = ['3', '2', '0'];
+      break;
+
+    case '2':
+      invalidCapacities = ['3', '0'];
+      break;
+
+    case '3':
+      invalidCapacities = ['0'];
+      break;
+
+    case '100':
+      invalidCapacities = ['3', '2', '1'];
+      break;
+  }
+
+  return invalidCapacities;
+};
+
+const setCapacityFieldCustomValidity = (invalidValues) => {
+  if (invalidValues.includes(capacityFieldDOM.value)) {
+    capacityFieldDOM.setCustomValidity('Выберите доступное количество гостей');
+  } else {
+    capacityFieldDOM.setCustomValidity('');
+  }
+};
+
+const highlightInvalidField = (fieldName) => {
+  if (!fieldName.checkValidity()) {
+    fieldName.style.borderColor = 'red';
+  } else {
+    fieldName.removeAttribute('style');
+  }
+};
+
+const onMainMapPinMouseup = () => {
+  setActiveState();
+  setActiveAddress();
+
+  mainMapPinDOM.removeEventListener('mouseup', onMainMapPinMouseup);
+};
+
+const onRoomsCountFieldChange = (evt) => {
+  const invalidCapacityValues = getInvalidCapacities(evt.target.value);
+
+  setCapacityFieldCustomValidity(invalidCapacityValues);
+  disableInvalidCapacities(invalidCapacityValues);
+  highlightInvalidField(capacityFieldDOM);
+};
+
+const onCapacityFieldChange = (evt) => {
+  const invalidCapacities = getInvalidCapacities(roomsCountFieldDOM.value);
+
+  setCapacityFieldCustomValidity(invalidCapacities);
+  highlightInvalidField(evt.target);
+};
+
+const onTypeFieldChange = (evt) => {
+  setMinimalPrice(evt.target.value);
+};
+
+const onTimeInFieldChange = () => {
+  timeOutFieldDOM.value = timeInFieldDOM.value;
+};
+
+const onTimeOutFieldChange = () => {
+  timeInFieldDOM.value = timeOutFieldDOM.value;
 };
 
 const onMapPinClick = (evt) => {
@@ -310,41 +424,8 @@ const onMapPinClick = (evt) => {
   }
 };
 
-const onTypeFieldChange = () => {
-  let minPrice;
-  switch (typeFieldsetDOM.value) {
-    case 'bungalo':
-      minPrice = 0;
-      priceFieldsetDOM.min = minPrice;
-      priceFieldsetDOM.placeholder = minPrice;
-      break;
-
-    case 'flat':
-      minPrice = 1000;
-      priceFieldsetDOM.min = minPrice;
-      priceFieldsetDOM.placeholder = minPrice;
-      break;
-
-    case 'house':
-      minPrice = 5000;
-      priceFieldsetDOM.min = minPrice;
-      priceFieldsetDOM.placeholder = minPrice;
-      break;
-
-    case 'palace':
-      minPrice = 10000;
-      priceFieldsetDOM.min = minPrice;
-      priceFieldsetDOM.placeholder = minPrice;
-      break;
-  }
-};
-
-const onTimeInFieldChange = () => {
-  timeOutFieldsetDOM.value = timeInFieldsetDOM.value;
-};
-
-const onTimeOutFieldChange = () => {
-  timeInFieldsetDOM.value = timeOutFieldsetDOM.value;
+const onCloseOfferCardButtonClick = (evt) => {
+  evt.target.parentNode.remove();
 };
 
 setInactiveAddress();
