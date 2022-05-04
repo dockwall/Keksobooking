@@ -7,6 +7,12 @@ const MAP_PIN_CSS = {
   HEIGHT: 70,
 };
 
+const MAIN_MAP_PIN_SIZE = {
+  WIDTH: 65,
+  HEIGHT_INACTIVE: 65,
+  HEIGHT_ACTIVE: 81,
+};
+
 const OFFER_OPTIONS = {
   TITLES: [
     'Большая уютная квартира',
@@ -71,7 +77,28 @@ const TYPES_DICT = {
   bungalo: 'Бунгало',
 };
 
-const getRandomFromInterval = (interval) => Math.floor((interval.MAX - interval.MIN + 1) * Math.random()) + interval.MIN;
+const mapDOM = document.querySelector('.map');
+const mainMapPinDOM = mapDOM.querySelector('.map__pin--main');
+const formDOM = document.querySelector('.ad-form');
+const formFieldsetsDOM = formDOM.querySelectorAll('fieldset');
+const titleFieldDOM = formDOM.querySelector('#title');
+const addressFieldDOM = formDOM.querySelector('#address');
+const typeFieldDOM = formDOM.querySelector('#type');
+const priceFieldDOM = formDOM.querySelector('#price');
+const timeInFieldDOM = formDOM.querySelector('#timein');
+const timeOutFieldDOM = formDOM.querySelector('#timeout');
+const roomsCountFieldDOM = formDOM.querySelector('#room_number');
+const capacityFieldDOM = formDOM.querySelector('#capacity');
+const fullTemplateDOM = document.querySelector('template').content;
+const templateMapPin = fullTemplateDOM.querySelector('.map__pin');
+const templateOfferCard = fullTemplateDOM.querySelector('.map__card');
+const templateOfferCardPhoto = templateOfferCard.querySelector('.popup__photos').querySelector('img');
+const offersArray = [];
+const mapPinsDOMArray = [];
+
+const getRandomFromInterval = (interval) => {
+  return Math.floor((interval.MAX - interval.MIN + 1) * Math.random()) + interval.MIN;
+};
 
 const getRandomFromArray = (array) => {
   const randomIndex = Math.floor(array.length * Math.random());
@@ -107,8 +134,53 @@ const getShuffledArray = (array) => {
   return shuffledArray;
 };
 
-const mapDOM = document.querySelector('.map');
-mapDOM.classList.remove('map--faded');
+const setActiveState = () => {
+  mapDOM.classList.remove('map--faded');
+  formDOM.classList.remove('ad-form--disabled');
+
+  formFieldsetsDOM.forEach(element => {
+    element.removeAttribute('disabled');
+  });
+
+  fillOffersArray();
+  fillMapPinsDOMArray();
+  renderMapPins(mapPinsDOMArray);
+
+  mapDOM.addEventListener('click', onMapPinClick);
+
+  titleFieldDOM.addEventListener('change', onTitleFieldChange);
+
+  typeFieldDOM.addEventListener('change', onTypeFieldChange);
+  setMinimalPrice(typeFieldDOM.value);
+
+  timeInFieldDOM.addEventListener('change', onTimeInFieldChange);
+  timeOutFieldDOM.addEventListener('change', onTimeOutFieldChange);
+
+  roomsCountFieldDOM.addEventListener('change', onRoomsCountFieldChange);
+  capacityFieldDOM.addEventListener('change', onCapacityFieldChange);
+
+  priceFieldDOM.addEventListener('change', onPriceFieldChange);
+
+  const invalidCapacityValues = getInvalidCapacities(roomsCountFieldDOM.value);
+  setCapacityFieldCustomValidity(invalidCapacityValues);
+  disableInvalidCapacities(invalidCapacityValues);
+
+  checkFieldValidity(capacityFieldDOM);
+
+
+};
+
+const setInactiveAddress = () => {
+  const inactiveMainPinCenterY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_INACTIVE / 2);
+  const inactiveMainPinCenterX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
+  addressFieldDOM.value = `${inactiveMainPinCenterY}, ${inactiveMainPinCenterX}`;
+};
+
+const setActiveAddress = () => {
+  const activeMainPinPointY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_ACTIVE);
+  const activeMainPinPointX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
+  addressFieldDOM.value = `${activeMainPinPointY}, ${activeMainPinPointX}`;
+};
 
 const generateOfferObject = (i) => {
   const randomLocationX = getRandomFromInterval(OFFER_OPTIONS.LOCATION_X);
@@ -141,19 +213,14 @@ const generateOfferObject = (i) => {
   return offerObject;
 };
 
-const offersArray = [];
+const fillOffersArray = () => {
+  for (let i = 0; i < ADS_COUNT; i++) {
+    const offerObject = generateOfferObject(i);
+    offersArray.push(offerObject);
+  }
+};
 
-for (let i = 0; i < ADS_COUNT; i++) {
-  const offerObject = generateOfferObject(i);
-  offersArray.push(offerObject);
-}
-
-const fullTemplateDOM = document.querySelector('template').content;
-const templateMapPin = fullTemplateDOM.querySelector('.map__pin');
-const templateOfferCard = fullTemplateDOM.querySelector('.map__card');
-const templateOfferCardPhoto = templateOfferCard.querySelector('.popup__photos').querySelector('img');
-
-const createMapPinDOM = (offerObject) => {
+const generateMapPinDOM = (offerObject) => {
   const pinElement = templateMapPin.cloneNode('true');
   const pinElementImg = pinElement.querySelector('img');
 
@@ -163,6 +230,13 @@ const createMapPinDOM = (offerObject) => {
   pinElementImg.alt = offerObject.offer.title;
 
   return pinElement;
+};
+
+const fillMapPinsDOMArray = () => {
+  offersArray.forEach(element => {
+    const mapPinDOMElement = generateMapPinDOM(element);
+    mapPinsDOMArray.push(mapPinDOMElement);
+  });
 };
 
 const createOfferCardDOM = (offerObject) => {
@@ -202,15 +276,6 @@ const createOfferCardDOM = (offerObject) => {
   return offerCardElement;
 };
 
-const mapPinsDOMArray = [];
-
-offersArray.forEach(element => {
-  const mapPinDOMElement = createMapPinDOM(element);
-  mapPinsDOMArray.push(mapPinDOMElement);
-});
-
-const offerCardDOMELement = createOfferCardDOM(offersArray[0]);
-
 const renderMapPins = (pinsArray) => {
   const pinsFragment = document.createDocumentFragment();
   pinsArray.forEach(element => pinsFragment.appendChild(element));
@@ -218,9 +283,167 @@ const renderMapPins = (pinsArray) => {
   mapDOM.querySelector('.map__pins').appendChild(pinsFragment);
 };
 
+const getOfferIndex = (evt) => {
+  let indexOfferObject;
+  const parentNode = evt.target.parentNode;
+
+  if (evt.target.nodeName === 'IMG' && parentNode.classList.value === 'map__pin') {
+    indexOfferObject = mapPinsDOMArray.indexOf(parentNode);
+  } else if (evt.target.nodeName === 'BUTTON' && evt.target.classList.value === 'map__pin') {
+    indexOfferObject = mapPinsDOMArray.indexOf(evt.target);
+  }
+
+  return indexOfferObject;
+};
+
 const renderOfferCard = (offerCardDOM) => {
   mapDOM.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', offerCardDOM);
 };
 
-renderMapPins(mapPinsDOMArray);
-renderOfferCard(offerCardDOMELement);
+const setMinimalPrice = (typeValue) => {
+  let minPrice;
+
+  switch (typeValue) {
+    case 'bungalo':
+      minPrice = 0;
+      break;
+
+    case 'flat':
+      minPrice = 1000;
+      break;
+
+    case 'house':
+      minPrice = 5000;
+      break;
+
+    case 'palace':
+      minPrice = 10000;
+      break;
+  }
+
+  priceFieldDOM.min = minPrice;
+  priceFieldDOM.placeholder = minPrice;
+};
+
+const disableInvalidCapacities = (invalidValues) => {
+  for (let i = 0; i < capacityFieldDOM.children.length; i++) {
+    if (invalidValues.includes(capacityFieldDOM.children[i].value)) {
+      capacityFieldDOM.children[i].setAttribute('disabled', '');
+      capacityFieldDOM.children[i].style.backgroundColor = 'silver';
+    } else {
+      capacityFieldDOM.children[i].removeAttribute('disabled');
+      capacityFieldDOM.children[i].removeAttribute('style');
+    }
+  }
+
+};
+
+const getInvalidCapacities = (roomsCount) => {
+  let invalidCapacities;
+
+  switch (roomsCount) {
+    case '1':
+      invalidCapacities = ['3', '2', '0'];
+      break;
+
+    case '2':
+      invalidCapacities = ['3', '0'];
+      break;
+
+    case '3':
+      invalidCapacities = ['0'];
+      break;
+
+    case '100':
+      invalidCapacities = ['3', '2', '1'];
+      break;
+  }
+
+  return invalidCapacities;
+};
+
+const setCapacityFieldCustomValidity = (invalidValues) => {
+  if (invalidValues.includes(capacityFieldDOM.value)) {
+    capacityFieldDOM.setCustomValidity('Выберите доступное количество гостей');
+  } else {
+    capacityFieldDOM.setCustomValidity('');
+  }
+};
+
+const checkFieldValidity = (fieldName) => {
+  if (!fieldName.checkValidity()) {
+    fieldName.style.borderColor = 'red';
+  } else {
+    fieldName.removeAttribute('style');
+  }
+};
+
+const onTitleFieldChange = (evt) => {
+  checkFieldValidity(evt.target);
+};
+
+const onMainMapPinMouseup = () => {
+  setActiveState();
+  setActiveAddress();
+
+  mainMapPinDOM.removeEventListener('mouseup', onMainMapPinMouseup);
+};
+
+const onRoomsCountFieldChange = (evt) => {
+  const invalidCapacityValues = getInvalidCapacities(evt.target.value);
+
+  setCapacityFieldCustomValidity(invalidCapacityValues);
+  disableInvalidCapacities(invalidCapacityValues);
+  checkFieldValidity(capacityFieldDOM);
+};
+
+const onCapacityFieldChange = (evt) => {
+  const invalidCapacities = getInvalidCapacities(roomsCountFieldDOM.value);
+
+  setCapacityFieldCustomValidity(invalidCapacities);
+  checkFieldValidity(evt.target);
+};
+
+const onTypeFieldChange = (evt) => {
+  setMinimalPrice(evt.target.value);
+  checkFieldValidity(priceFieldDOM);
+};
+
+const onPriceFieldChange = (evt) => {
+  checkFieldValidity(evt.target);
+};
+
+const onTimeInFieldChange = () => {
+  timeOutFieldDOM.value = timeInFieldDOM.value;
+};
+
+const onTimeOutFieldChange = () => {
+  timeInFieldDOM.value = timeOutFieldDOM.value;
+};
+
+const onMapPinClick = (evt) => {
+  const indexOfferObject = getOfferIndex(evt);
+
+  if (indexOfferObject !== undefined) {
+    const lastCardPopup = mapDOM.querySelector('.popup');
+
+    if (lastCardPopup) {
+      lastCardPopup.remove();
+    }
+
+    const offerObject = offersArray[indexOfferObject];
+    const offerCardElement = createOfferCardDOM(offerObject);
+    const closePopupButton = offerCardElement.querySelector('.popup__close');
+
+    closePopupButton.addEventListener('click', onCloseOfferCardButtonClick);
+
+    renderOfferCard(offerCardElement);
+  }
+};
+
+const onCloseOfferCardButtonClick = (evt) => {
+  evt.target.parentNode.remove();
+};
+
+setInactiveAddress();
+mainMapPinDOM.addEventListener('mouseup', onMainMapPinMouseup);
