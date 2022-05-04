@@ -81,6 +81,7 @@ const mapDOM = document.querySelector('.map');
 const mainMapPinDOM = mapDOM.querySelector('.map__pin--main');
 const formDOM = document.querySelector('.ad-form');
 const formFieldsetsDOM = formDOM.querySelectorAll('fieldset');
+const titleFieldDOM = formDOM.querySelector('#title');
 const addressFieldDOM = formDOM.querySelector('#address');
 const typeFieldDOM = formDOM.querySelector('#type');
 const priceFieldDOM = formDOM.querySelector('#price');
@@ -146,6 +147,9 @@ const setActiveState = () => {
   renderMapPins(mapPinsDOMArray);
 
   mapDOM.addEventListener('click', onMapPinClick);
+
+  titleFieldDOM.addEventListener('change', onTitleFieldChange);
+
   typeFieldDOM.addEventListener('change', onTypeFieldChange);
   setMinimalPrice(typeFieldDOM.value);
 
@@ -155,10 +159,14 @@ const setActiveState = () => {
   roomsCountFieldDOM.addEventListener('change', onRoomsCountFieldChange);
   capacityFieldDOM.addEventListener('change', onCapacityFieldChange);
 
+  priceFieldDOM.addEventListener('change', onPriceFieldChange);
+
   const invalidCapacityValues = getInvalidCapacities(roomsCountFieldDOM.value);
   setCapacityFieldCustomValidity(invalidCapacityValues);
   disableInvalidCapacities(invalidCapacityValues);
-  highlightInvalidField(capacityFieldDOM);
+
+  checkFieldValidity(capacityFieldDOM);
+
 
 };
 
@@ -362,12 +370,16 @@ const setCapacityFieldCustomValidity = (invalidValues) => {
   }
 };
 
-const highlightInvalidField = (fieldName) => {
+const checkFieldValidity = (fieldName) => {
   if (!fieldName.checkValidity()) {
     fieldName.style.borderColor = 'red';
   } else {
     fieldName.removeAttribute('style');
   }
+};
+
+const onTitleFieldChange = (evt) => {
+  checkFieldValidity(evt.target);
 };
 
 const onMainMapPinMouseup = () => {
@@ -382,18 +394,23 @@ const onRoomsCountFieldChange = (evt) => {
 
   setCapacityFieldCustomValidity(invalidCapacityValues);
   disableInvalidCapacities(invalidCapacityValues);
-  highlightInvalidField(capacityFieldDOM);
+  checkFieldValidity(capacityFieldDOM);
 };
 
 const onCapacityFieldChange = (evt) => {
   const invalidCapacities = getInvalidCapacities(roomsCountFieldDOM.value);
 
   setCapacityFieldCustomValidity(invalidCapacities);
-  highlightInvalidField(evt.target);
+  checkFieldValidity(evt.target);
 };
 
 const onTypeFieldChange = (evt) => {
   setMinimalPrice(evt.target.value);
+  checkFieldValidity(priceFieldDOM);
+};
+
+const onPriceFieldChange = (evt) => {
+  checkFieldValidity(evt.target);
 };
 
 const onTimeInFieldChange = () => {
