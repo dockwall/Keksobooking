@@ -164,7 +164,8 @@ const setActiveState = () => {
   const invalidCapacityValues = getInvalidCapacities(roomsCountFieldDOM.value);
   setCapacityFieldCustomValidity(invalidCapacityValues);
   disableInvalidCapacities(invalidCapacityValues);
-
+  checkFieldValidity(titleFieldDOM);
+  checkFieldValidity(priceFieldDOM);
   checkFieldValidity(capacityFieldDOM);
 
 
