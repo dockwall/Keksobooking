@@ -80,6 +80,7 @@ const TYPES_DICT = {
 const mapDOM = document.querySelector('.map');
 const mainMapPinDOM = mapDOM.querySelector('.map__pin--main');
 const formDOM = document.querySelector('.ad-form');
+const resetDOM = formDOM.querySelector('.ad-form__reset');
 const formFieldsetsDOM = formDOM.querySelectorAll('fieldset');
 const titleFieldDOM = formDOM.querySelector('#title');
 const addressFieldDOM = formDOM.querySelector('#address');
@@ -89,6 +90,8 @@ const timeInFieldDOM = formDOM.querySelector('#timein');
 const timeOutFieldDOM = formDOM.querySelector('#timeout');
 const roomsCountFieldDOM = formDOM.querySelector('#room_number');
 const capacityFieldDOM = formDOM.querySelector('#capacity');
+const descriptionFieldDOM = formDOM.querySelector('#description');
+const featureCheckboxesDOM = formDOM.querySelectorAll('input[name=features]');
 const fullTemplateDOM = document.querySelector('template').content;
 const templateMapPin = fullTemplateDOM.querySelector('.map__pin');
 const templateOfferCard = fullTemplateDOM.querySelector('.map__card');
@@ -142,8 +145,11 @@ const setActiveState = () => {
     element.removeAttribute('disabled');
   });
 
-  fillOffersArray();
-  fillMapPinsDOMArray();
+  if (offersArray.length === 0) {
+    fillOffersArray();
+    fillMapPinsDOMArray();
+  }
+
   renderMapPins(mapPinsDOMArray);
 
   mapDOM.addEventListener('click', onMapPinClick);
@@ -167,8 +173,46 @@ const setActiveState = () => {
   checkFieldValidity(titleFieldDOM);
   checkFieldValidity(priceFieldDOM);
   checkFieldValidity(capacityFieldDOM);
+};
 
+const setInactiveState = () => {
+  mapDOM.classList.add('map--faded');
+  formDOM.classList.add('ad-form--disabled');
 
+  removeMapPins();
+  removeOfferCard();
+
+  formFieldsetsDOM.forEach(element => {
+    element.setAttribute('disabled', '');
+  });
+
+  mapDOM.removeEventListener('click', onMapPinClick);
+  titleFieldDOM.removeEventListener('change', onTitleFieldChange);
+
+  typeFieldDOM.removeEventListener('change', onTypeFieldChange);
+  setMinimalPrice(typeFieldDOM.value);
+
+  timeInFieldDOM.removeEventListener('change', onTimeInFieldChange);
+  timeOutFieldDOM.removeEventListener('change', onTimeOutFieldChange);
+
+  roomsCountFieldDOM.removeEventListener('change', onRoomsCountFieldChange);
+  capacityFieldDOM.removeEventListener('change', onCapacityFieldChange);
+
+  priceFieldDOM.removeEventListener('change', onPriceFieldChange);
+
+  clearField(titleFieldDOM);
+  clearField(typeFieldDOM);
+  clearField(priceFieldDOM);
+  clearField(roomsCountFieldDOM);
+  clearField(capacityFieldDOM);
+  clearField(timeInFieldDOM);
+  clearField(timeOutFieldDOM);
+  clearField(descriptionFieldDOM);
+
+  setMinimalPrice(typeFieldDOM.value);
+  setUnchecked(featureCheckboxesDOM);
+
+  // Удаление пикч
 };
 
 const setInactiveAddress = () => {
@@ -181,6 +225,26 @@ const setActiveAddress = () => {
   const activeMainPinPointY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_ACTIVE);
   const activeMainPinPointX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
   addressFieldDOM.value = `${activeMainPinPointY}, ${activeMainPinPointX}`;
+};
+
+const setUnchecked = (checkboxes) => {
+  checkboxes.forEach(element => {
+    element.checked = false;
+  });
+};
+
+const clearField = (fieldName) => {
+  if (fieldName.style) {
+    fieldName.removeAttribute('style');
+  }
+
+  if (fieldName.nodeName === 'SELECT') {
+    fieldName.value = fieldName.querySelector('[selected]').value;
+  } else if (fieldName.nodeName === 'INPUT' || fieldName.nodeName === 'TEXTAREA') {
+    fieldName.value = '';
+  }
+
+  // Нужно сделать для фоток и фич комнаты похожее обнуление
 };
 
 const generateOfferObject = (i) => {
@@ -282,6 +346,18 @@ const renderMapPins = (pinsArray) => {
   pinsArray.forEach(element => pinsFragment.appendChild(element));
 
   mapDOM.querySelector('.map__pins').appendChild(pinsFragment);
+};
+
+const removeMapPins = () => {
+  mapPinsDOMArray.forEach(element => mapDOM.querySelector('.map__pins').removeChild(element));
+};
+
+const removeOfferCard = () => {
+  const offerCardPopup = mapDOM.querySelector('.popup');
+
+  if (offerCardPopup) {
+    offerCardPopup.remove();
+  }
 };
 
 const getOfferIndex = (evt) => {
@@ -388,6 +464,15 @@ const onMainMapPinMouseup = () => {
   setActiveAddress();
 
   mainMapPinDOM.removeEventListener('mouseup', onMainMapPinMouseup);
+  resetDOM.addEventListener('click', onResetClick);
+};
+
+const onResetClick = () => {
+  setInactiveState();
+  setInactiveAddress();
+
+  mainMapPinDOM.addEventListener('mouseup', onMainMapPinMouseup);
+  resetDOM.removeEventListener('click', onResetClick);
 };
 
 const onRoomsCountFieldChange = (evt) => {
@@ -426,11 +511,7 @@ const onMapPinClick = (evt) => {
   const indexOfferObject = getOfferIndex(evt);
 
   if (indexOfferObject !== undefined) {
-    const lastCardPopup = mapDOM.querySelector('.popup');
-
-    if (lastCardPopup) {
-      lastCardPopup.remove();
-    }
+    removeOfferCard();
 
     const offerObject = offersArray[indexOfferObject];
     const offerCardElement = createOfferCardDOM(offerObject);
@@ -442,8 +523,8 @@ const onMapPinClick = (evt) => {
   }
 };
 
-const onCloseOfferCardButtonClick = (evt) => {
-  evt.target.parentNode.remove();
+const onCloseOfferCardButtonClick = () => {
+  removeOfferCard();
 };
 
 setInactiveAddress();
