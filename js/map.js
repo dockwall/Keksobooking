@@ -46,7 +46,7 @@ const OFFER_OPTIONS = {
   PHOTOS: [
     'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
     'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-    'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
+    'http://o0.github.io/assets/images/tokyo/hotel3.jpg',
   ],
   LOCATION_X: {
     MIN: 300,
@@ -92,6 +92,8 @@ const roomsCountFieldDOM = formDOM.querySelector('#room_number');
 const capacityFieldDOM = formDOM.querySelector('#capacity');
 const descriptionFieldDOM = formDOM.querySelector('#description');
 const featureCheckboxesDOM = formDOM.querySelectorAll('input[name=features]');
+const avatarUploadFieldDOM = formDOM.querySelector('#avatar');
+const imagesUploadFieldDOM = formDOM.querySelector('#images');
 const fullTemplateDOM = document.querySelector('template').content;
 const templateMapPin = fullTemplateDOM.querySelector('.map__pin');
 const templateOfferCard = fullTemplateDOM.querySelector('.map__card');
@@ -208,11 +210,11 @@ const setInactiveState = () => {
   clearField(timeInFieldDOM);
   clearField(timeOutFieldDOM);
   clearField(descriptionFieldDOM);
+  clearField(avatarUploadFieldDOM);
+  clearField(imagesUploadFieldDOM);
 
   setMinimalPrice(typeFieldDOM.value);
   setUnchecked(featureCheckboxesDOM);
-
-  // Удаление пикч
 };
 
 const setInactiveAddress = () => {
@@ -240,11 +242,9 @@ const clearField = (fieldName) => {
 
   if (fieldName.nodeName === 'SELECT') {
     fieldName.value = fieldName.querySelector('[selected]').value;
-  } else if (fieldName.nodeName === 'INPUT' || fieldName.nodeName === 'TEXTAREA') {
+  } else if (fieldName.nodeName === 'INPUT' || fieldName.nodeName === 'TEXTAREA' || fieldName.type === 'file') {
     fieldName.value = '';
   }
-
-  // Нужно сделать для фоток и фич комнаты похожее обнуление
 };
 
 const generateOfferObject = (i) => {
