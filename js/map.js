@@ -101,6 +101,8 @@ const templateOfferCardPhoto = templateOfferCard.querySelector('.popup__photos')
 const offersArray = [];
 const mapPinsDOMArray = [];
 
+let isActive = false;
+
 const getRandomFromInterval = (interval) => {
   return Math.floor((interval.MAX - interval.MIN + 1) * Math.random()) + interval.MIN;
 };
@@ -140,6 +142,8 @@ const getShuffledArray = (array) => {
 };
 
 const setActiveState = () => {
+  isActive = true;
+
   mapDOM.classList.remove('map--faded');
   formDOM.classList.remove('ad-form--disabled');
 
@@ -178,6 +182,8 @@ const setActiveState = () => {
 };
 
 const setInactiveState = () => {
+  isActive = false;
+
   mapDOM.classList.add('map--faded');
   formDOM.classList.add('ad-form--disabled');
 
@@ -217,16 +223,16 @@ const setInactiveState = () => {
   setUnchecked(featureCheckboxesDOM);
 };
 
-const setInactiveAddress = () => {
-  const inactiveMainPinCenterY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_INACTIVE / 2);
-  const inactiveMainPinCenterX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
-  addressFieldDOM.value = `${inactiveMainPinCenterY}, ${inactiveMainPinCenterX}`;
-};
-
-const setActiveAddress = () => {
-  const activeMainPinPointY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_ACTIVE);
-  const activeMainPinPointX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
-  addressFieldDOM.value = `${activeMainPinPointY}, ${activeMainPinPointX}`;
+const setAddress = () => {
+  if (isActive) {
+    const activeMainPinPointY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_ACTIVE);
+    const activeMainPinPointX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
+    addressFieldDOM.value = `${activeMainPinPointY}, ${activeMainPinPointX}`;
+  } else {
+    const inactiveMainPinCenterY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_INACTIVE / 2);
+    const inactiveMainPinCenterX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
+    addressFieldDOM.value = `${inactiveMainPinCenterY}, ${inactiveMainPinCenterX}`;
+  }
 };
 
 const setUnchecked = (checkboxes) => {
@@ -461,7 +467,7 @@ const onTitleFieldChange = (evt) => {
 
 const onMainMapPinMouseup = () => {
   setActiveState();
-  setActiveAddress();
+  setAddress();
 
   mainMapPinDOM.removeEventListener('mouseup', onMainMapPinMouseup);
   resetDOM.addEventListener('click', onResetClick);
@@ -469,7 +475,7 @@ const onMainMapPinMouseup = () => {
 
 const onResetClick = () => {
   setInactiveState();
-  setInactiveAddress();
+  setAddress();
 
   mainMapPinDOM.addEventListener('mouseup', onMainMapPinMouseup);
   resetDOM.removeEventListener('click', onResetClick);
@@ -527,13 +533,40 @@ const onCloseOfferCardButtonClick = () => {
   removeOfferCard();
 };
 
-setInactiveAddress();
+setAddress();
 
-mainMapPinDOM.addEventListener('mousedown', function (downEvt) {
+mainMapPinDOM.addEventListener('mousedown', function (mouseDownEvt) {
   let startCoordinates = {
-    x: downEvt.clientX,
-    y: downEvt.clientY,
+    x: mouseDownEvt.clientX,
+    y: mouseDownEvt.clientY,
   };
+
+  const onMainMapPinMouseMove = (mouseMoveEvt) => {
+    const shiftCoordinates = {
+      x: startCoordinates.x - mouseMoveEvt.clientX,
+      y: startCoordinates.y - mouseMoveEvt.clientY,
+    };
+
+    startCoordinates = {
+      x: mouseMoveEvt.clientX,
+      y: mouseMoveEvt.clientY,
+    };
+
+    mainMapPinDOM.style.top = (mainMapPinDOM.offsetTop - shiftCoordinates.y) + 'px';
+    mainMapPinDOM.style.left = (mainMapPinDOM.offsetLeft - shiftCoordinates.x) + 'px';
+
+    setAddress();
+  };
+
+  const onDraggedMainMapPinMouseUp = function () {
+    setAddress();
+
+    document.removeEventListener('mousemove', onMainMapPinMouseMove);
+    document.removeEventListener('mouseup', onDraggedMainMapPinMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMainMapPinMouseMove);
+  document.addEventListener('mouseup', onDraggedMainMapPinMouseUp);
 });
 
 mainMapPinDOM.addEventListener('mouseup', onMainMapPinMouseup);
