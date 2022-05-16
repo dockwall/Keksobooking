@@ -528,4 +528,12 @@ const onCloseOfferCardButtonClick = () => {
 };
 
 setInactiveAddress();
+
+mainMapPinDOM.addEventListener('mousedown', function (downEvt) {
+  let startCoordinates = {
+    x: downEvt.clientX,
+    y: downEvt.clientY,
+  };
+});
+
 mainMapPinDOM.addEventListener('mouseup', onMainMapPinMouseup);
