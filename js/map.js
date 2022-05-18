@@ -1,7 +1,5 @@
 'use strict';
 
-const ADS_COUNT = 8;
-
 const MAP_PIN_CSS = {
   WIDTH: 50,
   HEIGHT: 70,
@@ -108,48 +106,10 @@ const fullTemplateDOM = document.querySelector('template').content;
 const templateMapPin = fullTemplateDOM.querySelector('.map__pin');
 const templateOfferCard = fullTemplateDOM.querySelector('.map__card');
 const templateOfferCardPhoto = templateOfferCard.querySelector('.popup__photos').querySelector('img');
-const offersArray = [];
+
 const mapPinsDOMArray = [];
 
 let isActive = false;
-
-const getRandomFromInterval = (interval) => {
-  return Math.floor((interval.MAX - interval.MIN + 1) * Math.random()) + interval.MIN;
-};
-
-const getRandomFromArray = (array) => {
-  const randomIndex = Math.floor(array.length * Math.random());
-  return array[randomIndex];
-};
-
-const getRandomArray = (array) => {
-  const originalArray = array.slice();
-  const randomArray = [];
-  const randomLength = Math.floor(originalArray.length * Math.random() + 1);
-
-  for (let i = 0; i < randomLength; i++) {
-    const randomIndex = Math.floor(originalArray.length * Math.random());
-    const arrayElement = originalArray[randomIndex];
-    originalArray.splice(randomIndex, 1);
-    randomArray.push(arrayElement);
-  }
-
-  return randomArray;
-};
-
-const getShuffledArray = (array) => {
-  const originalArray = array.slice();
-  const shuffledArray = [];
-
-  for (let i = 0; i < array.length; i++) {
-    const randomIndex = Math.floor(originalArray.length * Math.random());
-    const arrayElement = originalArray[randomIndex];
-    originalArray.splice(randomIndex, 1);
-    shuffledArray.push(arrayElement);
-  }
-
-  return shuffledArray;
-};
 
 const setActiveState = () => {
   isActive = true;
@@ -161,10 +121,7 @@ const setActiveState = () => {
     element.removeAttribute('disabled');
   });
 
-  if (offersArray.length === 0) {
-    fillOffersArray();
-    fillMapPinsDOMArray();
-  }
+  fillMapPinsDOMArray();
 
   renderMapPins(mapPinsDOMArray);
 
@@ -268,44 +225,6 @@ const clearField = (fieldName) => {
   }
 };
 
-const generateOfferObject = (i) => {
-  const randomLocationX = getRandomFromInterval(OFFER_OPTIONS.LOCATION_X);
-  const randomLocationY = getRandomFromInterval(OFFER_OPTIONS.LOCATION_Y);
-
-  const offerObject = {
-    author: {
-      avatar: `img/avatars/user0${i + 1}.png`,
-    },
-
-    offer: {
-      title: OFFER_OPTIONS.TITLES[i],
-      address: `${randomLocationX}, ${randomLocationY}`,
-      price: getRandomFromInterval(OFFER_OPTIONS.PRICES),
-      type: getRandomFromArray(OFFER_OPTIONS.TYPES),
-      rooms: getRandomFromInterval(OFFER_OPTIONS.ROOMS),
-      guests: getRandomFromInterval(OFFER_OPTIONS.GUESTS),
-      checkin: getRandomFromArray(OFFER_OPTIONS.TIMES),
-      checkout: getRandomFromArray(OFFER_OPTIONS.TIMES),
-      features: getRandomArray(OFFER_OPTIONS.FEATURES),
-      desrciption: '',
-      photos: getShuffledArray(OFFER_OPTIONS.PHOTOS),
-      location: {
-        x: randomLocationX,
-        y: randomLocationY,
-      },
-    },
-  };
-
-  return offerObject;
-};
-
-const fillOffersArray = () => {
-  for (let i = 0; i < ADS_COUNT; i++) {
-    const offerObject = generateOfferObject(i);
-    offersArray.push(offerObject);
-  }
-};
-
 const generateMapPinDOM = (offerObject) => {
   const pinElement = templateMapPin.cloneNode('true');
   const pinElementImg = pinElement.querySelector('img');
@@ -319,7 +238,7 @@ const generateMapPinDOM = (offerObject) => {
 };
 
 const fillMapPinsDOMArray = () => {
-  offersArray.forEach(element => {
+  window.data.offersArray.forEach(element => {
     const mapPinDOMElement = generateMapPinDOM(element);
     mapPinsDOMArray.push(mapPinDOMElement);
   });
@@ -535,7 +454,7 @@ const onMapPinClick = (evt) => {
   if (indexOfferObject !== undefined) {
     removeOfferCard();
 
-    const offerObject = offersArray[indexOfferObject];
+    const offerObject = window.data.offersArray[indexOfferObject];
     const offerCardElement = createOfferCardDOM(offerObject);
     const closePopupButton = offerCardElement.querySelector('.popup__close');
 
