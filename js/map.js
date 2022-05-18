@@ -7,10 +7,15 @@ const MAP_PIN_CSS = {
   HEIGHT: 70,
 };
 
-const MAIN_MAP_PIN_SIZE = {
-  WIDTH: 65,
-  HEIGHT_INACTIVE: 65,
-  HEIGHT_ACTIVE: 81,
+const DRAG_LIMIT = {
+  X: {
+    MIN: 0,
+    MAX: 1200,
+  },
+  Y: {
+    MIN: 130,
+    MAX: 630,
+  },
 };
 
 const OFFER_OPTIONS = {
@@ -225,13 +230,13 @@ const setInactiveState = () => {
 
 const setAddress = () => {
   if (isActive) {
-    const activeMainPinPointY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_ACTIVE);
-    const activeMainPinPointX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
-    addressFieldDOM.value = `${activeMainPinPointY}, ${activeMainPinPointX}`;
+    const activeMainPinPointY = mainMapPinDOM.offsetTop + mainMapPinDOM.offsetHeight;
+    const activeMainPinPointX = mainMapPinDOM.offsetLeft + Math.floor(mainMapPinDOM.offsetWidth / 2);
+    addressFieldDOM.value = `${activeMainPinPointX}, ${activeMainPinPointY}`;
   } else {
-    const inactiveMainPinCenterY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_INACTIVE / 2);
-    const inactiveMainPinCenterX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
-    addressFieldDOM.value = `${inactiveMainPinCenterY}, ${inactiveMainPinCenterX}`;
+    const inactiveMainPinCenterY = mainMapPinDOM.offsetTop + Math.floor(mainMapPinDOM.offsetHeight / 2);
+    const inactiveMainPinCenterX = mainMapPinDOM.offsetLeft + Math.floor(mainMapPinDOM.offsetWidth / 2);
+    addressFieldDOM.value = `${inactiveMainPinCenterX}, ${inactiveMainPinCenterY}`;
   }
 };
 
@@ -552,8 +557,18 @@ mainMapPinDOM.addEventListener('mousedown', function (mouseDownEvt) {
       y: mouseMoveEvt.clientY,
     };
 
-    mainMapPinDOM.style.top = (mainMapPinDOM.offsetTop - shiftCoordinates.y) + 'px';
-    mainMapPinDOM.style.left = (mainMapPinDOM.offsetLeft - shiftCoordinates.x) + 'px';
+    const newCoordinates = {
+      x: mainMapPinDOM.offsetLeft - shiftCoordinates.x,
+      y: mainMapPinDOM.offsetTop - shiftCoordinates.y,
+    };
+
+    if (newCoordinates.x >= DRAG_LIMIT.X.MIN && (newCoordinates.x + mainMapPinDOM.offsetWidth) <= DRAG_LIMIT.X.MAX) {
+      mainMapPinDOM.style.left = (newCoordinates.x) + 'px';
+    }
+
+    if ((newCoordinates.y + mainMapPinDOM.offsetHeight) >= DRAG_LIMIT.Y.MIN && (newCoordinates.y + mainMapPinDOM.offsetHeight) <= DRAG_LIMIT.Y.MAX) {
+      mainMapPinDOM.style.top = (newCoordinates.y) + 'px';
+    }
 
     setAddress();
   };
