@@ -1,10 +1,5 @@
 'use strict';
 
-const MAP_PIN_CSS = {
-  WIDTH: 50,
-  HEIGHT: 70,
-};
-
 const DRAG_LIMIT = {
   X: {
     MIN: 0,
@@ -103,11 +98,8 @@ const featureCheckboxesDOM = formDOM.querySelectorAll('input[name=features]');
 const avatarUploadFieldDOM = formDOM.querySelector('#avatar');
 const imagesUploadFieldDOM = formDOM.querySelector('#images');
 const fullTemplateDOM = document.querySelector('template').content;
-const templateMapPin = fullTemplateDOM.querySelector('.map__pin');
 const templateOfferCard = fullTemplateDOM.querySelector('.map__card');
 const templateOfferCardPhoto = templateOfferCard.querySelector('.popup__photos').querySelector('img');
-
-const mapPinsDOMArray = [];
 
 let isActive = false;
 
@@ -121,9 +113,7 @@ const setActiveState = () => {
     element.removeAttribute('disabled');
   });
 
-  fillMapPinsDOMArray();
-
-  renderMapPins(mapPinsDOMArray);
+  renderMapPins(window.pins.pinsArray);
 
   mapDOM.addEventListener('click', onMapPinClick);
 
@@ -225,25 +215,6 @@ const clearField = (fieldName) => {
   }
 };
 
-const generateMapPinDOM = (offerObject) => {
-  const pinElement = templateMapPin.cloneNode('true');
-  const pinElementImg = pinElement.querySelector('img');
-
-  pinElement.style.left = `${offerObject.offer.location.x - (MAP_PIN_CSS.WIDTH / 2)}px`;
-  pinElement.style.top = `${offerObject.offer.location.y - MAP_PIN_CSS.HEIGHT}px`;
-  pinElementImg.src = offerObject.author.avatar;
-  pinElementImg.alt = offerObject.offer.title;
-
-  return pinElement;
-};
-
-const fillMapPinsDOMArray = () => {
-  window.data.offersArray.forEach(element => {
-    const mapPinDOMElement = generateMapPinDOM(element);
-    mapPinsDOMArray.push(mapPinDOMElement);
-  });
-};
-
 const createOfferCardDOM = (offerObject) => {
   const offerCardElement = templateOfferCard.cloneNode('true');
   const offerCardElementFeatures = offerCardElement.querySelector('.popup__features');
@@ -289,7 +260,7 @@ const renderMapPins = (pinsArray) => {
 };
 
 const removeMapPins = () => {
-  mapPinsDOMArray.forEach(element => mapDOM.querySelector('.map__pins').removeChild(element));
+  window.pins.pinsArray.forEach(element => mapDOM.querySelector('.map__pins').removeChild(element));
 };
 
 const removeOfferCard = () => {
@@ -305,9 +276,9 @@ const getOfferIndex = (evt) => {
   const parentNode = evt.target.parentNode;
 
   if (evt.target.nodeName === 'IMG' && parentNode.classList.value === 'map__pin') {
-    indexOfferObject = mapPinsDOMArray.indexOf(parentNode);
+    indexOfferObject = window.pins.pinsArray.indexOf(parentNode);
   } else if (evt.target.nodeName === 'BUTTON' && evt.target.classList.value === 'map__pin') {
-    indexOfferObject = mapPinsDOMArray.indexOf(evt.target);
+    indexOfferObject = window.pins.pinsArray.indexOf(evt.target);
   }
 
   return indexOfferObject;
