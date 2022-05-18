@@ -7,10 +7,20 @@ const MAP_PIN_CSS = {
   HEIGHT: 70,
 };
 
-const MAIN_MAP_PIN_SIZE = {
-  WIDTH: 65,
-  HEIGHT_INACTIVE: 65,
-  HEIGHT_ACTIVE: 81,
+const DRAG_LIMIT = {
+  X: {
+    MIN: 0,
+    MAX: 1200,
+  },
+  Y: {
+    MIN: 130,
+    MAX: 630,
+  },
+};
+
+const DEFAULT_MAP_PIN_POSITION = {
+  X: 570,
+  Y: 375,
 };
 
 const OFFER_OPTIONS = {
@@ -101,6 +111,8 @@ const templateOfferCardPhoto = templateOfferCard.querySelector('.popup__photos')
 const offersArray = [];
 const mapPinsDOMArray = [];
 
+let isActive = false;
+
 const getRandomFromInterval = (interval) => {
   return Math.floor((interval.MAX - interval.MIN + 1) * Math.random()) + interval.MIN;
 };
@@ -140,6 +152,8 @@ const getShuffledArray = (array) => {
 };
 
 const setActiveState = () => {
+  isActive = true;
+
   mapDOM.classList.remove('map--faded');
   formDOM.classList.remove('ad-form--disabled');
 
@@ -178,6 +192,8 @@ const setActiveState = () => {
 };
 
 const setInactiveState = () => {
+  isActive = false;
+
   mapDOM.classList.add('map--faded');
   formDOM.classList.add('ad-form--disabled');
 
@@ -217,16 +233,21 @@ const setInactiveState = () => {
   setUnchecked(featureCheckboxesDOM);
 };
 
-const setInactiveAddress = () => {
-  const inactiveMainPinCenterY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_INACTIVE / 2);
-  const inactiveMainPinCenterX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
-  addressFieldDOM.value = `${inactiveMainPinCenterY}, ${inactiveMainPinCenterX}`;
+const setAddress = () => {
+  if (isActive) {
+    const activeMainPinPointY = mainMapPinDOM.offsetTop + mainMapPinDOM.offsetHeight;
+    const activeMainPinPointX = mainMapPinDOM.offsetLeft + Math.floor(mainMapPinDOM.offsetWidth / 2);
+    addressFieldDOM.value = `${activeMainPinPointX}, ${activeMainPinPointY}`;
+  } else {
+    const inactiveMainPinCenterY = mainMapPinDOM.offsetTop + Math.floor(mainMapPinDOM.offsetHeight / 2);
+    const inactiveMainPinCenterX = mainMapPinDOM.offsetLeft + Math.floor(mainMapPinDOM.offsetWidth / 2);
+    addressFieldDOM.value = `${inactiveMainPinCenterX}, ${inactiveMainPinCenterY}`;
+  }
 };
 
-const setActiveAddress = () => {
-  const activeMainPinPointY = mainMapPinDOM.offsetTop + (MAIN_MAP_PIN_SIZE.HEIGHT_ACTIVE);
-  const activeMainPinPointX = mainMapPinDOM.offsetLeft + (MAIN_MAP_PIN_SIZE.WIDTH / 2);
-  addressFieldDOM.value = `${activeMainPinPointY}, ${activeMainPinPointX}`;
+const setMainPinDefaultPosition = () => {
+  mainMapPinDOM.style.left = DEFAULT_MAP_PIN_POSITION.X + 'px';
+  mainMapPinDOM.style.top = DEFAULT_MAP_PIN_POSITION.Y + 'px';
 };
 
 const setUnchecked = (checkboxes) => {
@@ -461,7 +482,7 @@ const onTitleFieldChange = (evt) => {
 
 const onMainMapPinMouseup = () => {
   setActiveState();
-  setActiveAddress();
+  setAddress();
 
   mainMapPinDOM.removeEventListener('mouseup', onMainMapPinMouseup);
   resetDOM.addEventListener('click', onResetClick);
@@ -469,7 +490,8 @@ const onMainMapPinMouseup = () => {
 
 const onResetClick = () => {
   setInactiveState();
-  setInactiveAddress();
+  setMainPinDefaultPosition();
+  setAddress();
 
   mainMapPinDOM.addEventListener('mouseup', onMainMapPinMouseup);
   resetDOM.removeEventListener('click', onResetClick);
@@ -527,5 +549,50 @@ const onCloseOfferCardButtonClick = () => {
   removeOfferCard();
 };
 
-setInactiveAddress();
+setAddress();
+
+mainMapPinDOM.addEventListener('mousedown', function (mouseDownEvt) {
+  let startCoordinates = {
+    x: mouseDownEvt.clientX,
+    y: mouseDownEvt.clientY,
+  };
+
+  const onMainMapPinMouseMove = (mouseMoveEvt) => {
+    const shiftCoordinates = {
+      x: startCoordinates.x - mouseMoveEvt.clientX,
+      y: startCoordinates.y - mouseMoveEvt.clientY,
+    };
+
+    startCoordinates = {
+      x: mouseMoveEvt.clientX,
+      y: mouseMoveEvt.clientY,
+    };
+
+    const newCoordinates = {
+      x: mainMapPinDOM.offsetLeft - shiftCoordinates.x,
+      y: mainMapPinDOM.offsetTop - shiftCoordinates.y,
+    };
+
+    if (newCoordinates.x >= DRAG_LIMIT.X.MIN && (newCoordinates.x + mainMapPinDOM.offsetWidth) <= DRAG_LIMIT.X.MAX) {
+      mainMapPinDOM.style.left = (newCoordinates.x) + 'px';
+    }
+
+    if ((newCoordinates.y + mainMapPinDOM.offsetHeight) >= DRAG_LIMIT.Y.MIN && (newCoordinates.y + mainMapPinDOM.offsetHeight) <= DRAG_LIMIT.Y.MAX) {
+      mainMapPinDOM.style.top = (newCoordinates.y) + 'px';
+    }
+
+    setAddress();
+  };
+
+  const onDraggedMainMapPinMouseUp = function () {
+    setAddress();
+
+    document.removeEventListener('mousemove', onMainMapPinMouseMove);
+    document.removeEventListener('mouseup', onDraggedMainMapPinMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMainMapPinMouseMove);
+  document.addEventListener('mouseup', onDraggedMainMapPinMouseUp);
+});
+
 mainMapPinDOM.addEventListener('mouseup', onMainMapPinMouseup);
