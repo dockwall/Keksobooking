@@ -16,70 +16,6 @@ const DEFAULT_MAP_PIN_POSITION = {
   Y: 375,
 };
 
-const OFFER_OPTIONS = {
-  TITLES: [
-    'Большая уютная квартира',
-    'Маленькая неуютная квартира',
-    'Огромный прекрасный дворец',
-    'Маленький ужасный дворец',
-    'Красивый гостевой домик',
-    'Некрасивый негостеприимный домик',
-    'Уютное бунгало далеко от моря',
-    'Неуютное бунгало по колено в воде'
-  ],
-  TYPES: [
-    'palace',
-    'flat',
-    'house',
-    'bungalo'
-  ],
-  TIMES: [
-    '12:00',
-    '13:00',
-    '14:00'
-  ],
-  FEATURES: [
-    'wifi',
-    'dishwasher',
-    'parking',
-    'washer',
-    'elevator',
-    'conditioner'
-  ],
-  PHOTOS: [
-    'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
-    'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-    'http://o0.github.io/assets/images/tokyo/hotel3.jpg',
-  ],
-  LOCATION_X: {
-    MIN: 300,
-    MAX: 900,
-  },
-  LOCATION_Y: {
-    MIN: 130,
-    MAX: 630,
-  },
-  PRICES: {
-    MIN: 1000,
-    MAX: 1000000,
-  },
-  ROOMS: {
-    MIN: 1,
-    MAX: 5,
-  },
-  GUESTS: {
-    MIN: 1,
-    MAX: 15,
-  },
-};
-
-const TYPES_DICT = {
-  palace: 'Дворец',
-  flat: 'Квартира',
-  house: 'Дом',
-  bungalo: 'Бунгало',
-};
-
 const mapDOM = document.querySelector('.map');
 const mainMapPinDOM = mapDOM.querySelector('.map__pin--main');
 const formDOM = document.querySelector('.ad-form');
@@ -97,9 +33,6 @@ const descriptionFieldDOM = formDOM.querySelector('#description');
 const featureCheckboxesDOM = formDOM.querySelectorAll('input[name=features]');
 const avatarUploadFieldDOM = formDOM.querySelector('#avatar');
 const imagesUploadFieldDOM = formDOM.querySelector('#images');
-const fullTemplateDOM = document.querySelector('template').content;
-const templateOfferCard = fullTemplateDOM.querySelector('.map__card');
-const templateOfferCardPhoto = templateOfferCard.querySelector('.popup__photos').querySelector('img');
 
 let isActive = false;
 
@@ -213,43 +146,6 @@ const clearField = (fieldName) => {
   } else if (fieldName.nodeName === 'INPUT' || fieldName.nodeName === 'TEXTAREA' || fieldName.type === 'file') {
     fieldName.value = '';
   }
-};
-
-const createOfferCardDOM = (offerObject) => {
-  const offerCardElement = templateOfferCard.cloneNode('true');
-  const offerCardElementFeatures = offerCardElement.querySelector('.popup__features');
-  const offerCardElementPhotos = offerCardElement.querySelector('.popup__photos');
-  const offerCardPhotosFragment = document.createDocumentFragment();
-
-  offerCardElement.querySelector('.popup__title').textContent = offerObject.offer.title;
-  offerCardElement.querySelector('.popup__text--address').textContent = offerObject.offer.address;
-  offerCardElement.querySelector('.popup__text--price').textContent = `${offerObject.offer.price}\u20BD/ночь`;
-  offerCardElement.querySelector('.popup__type').textContent = TYPES_DICT[offerObject.offer.type];
-  offerCardElement.querySelector('.popup__text--capacity').textContent = `${offerObject.offer.rooms} комнаты для ${offerObject.offer.guests} гостей`;
-  offerCardElement.querySelector('.popup__text--time').textContent = `Заезд после ${offerObject.offer.checkin}, выезд до ${offerObject.offer.checkout}`;
-  offerCardElement.querySelector('.popup__description').textContent = offerObject.offer.desrciption;
-  offerCardElement.querySelector('.popup__avatar').src = offerObject.author.avatar;
-
-  OFFER_OPTIONS.FEATURES.forEach(element => {
-    const classToDelete = (offerObject.offer.features.includes(element)) ? '' : `.popup__feature--${element}`;
-
-    if (classToDelete) {
-      const featureToDelete = offerCardElementFeatures.querySelector(classToDelete);
-      offerCardElementFeatures.removeChild(featureToDelete);
-    }
-  });
-
-  offerObject.offer.photos.forEach(element => {
-    const photoElement = templateOfferCardPhoto.cloneNode('true');
-    photoElement.src = element;
-    offerCardPhotosFragment.appendChild(photoElement);
-  });
-
-  offerCardElementPhotos.removeChild(offerCardElementPhotos.querySelector('.popup__photo'));
-  offerCardElementPhotos.appendChild(offerCardPhotosFragment);
-
-
-  return offerCardElement;
 };
 
 const renderMapPins = (pinsArray) => {
@@ -426,7 +322,7 @@ const onMapPinClick = (evt) => {
     removeOfferCard();
 
     const offerObject = window.data.offersArray[indexOfferObject];
-    const offerCardElement = createOfferCardDOM(offerObject);
+    const offerCardElement = window.card.createCard(offerObject);
     const closePopupButton = offerCardElement.querySelector('.popup__close');
 
     closePopupButton.addEventListener('click', onCloseOfferCardButtonClick);
