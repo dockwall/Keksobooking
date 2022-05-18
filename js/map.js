@@ -18,6 +18,11 @@ const DRAG_LIMIT = {
   },
 };
 
+const DEFAULT_MAP_PIN_POSITION = {
+  X: 570,
+  Y: 375,
+};
+
 const OFFER_OPTIONS = {
   TITLES: [
     'Большая уютная квартира',
@@ -238,6 +243,11 @@ const setAddress = () => {
     const inactiveMainPinCenterX = mainMapPinDOM.offsetLeft + Math.floor(mainMapPinDOM.offsetWidth / 2);
     addressFieldDOM.value = `${inactiveMainPinCenterX}, ${inactiveMainPinCenterY}`;
   }
+};
+
+const setMainPinDefaultPosition = () => {
+  mainMapPinDOM.style.left = DEFAULT_MAP_PIN_POSITION.X + 'px';
+  mainMapPinDOM.style.top = DEFAULT_MAP_PIN_POSITION.Y + 'px';
 };
 
 const setUnchecked = (checkboxes) => {
@@ -480,6 +490,7 @@ const onMainMapPinMouseup = () => {
 
 const onResetClick = () => {
   setInactiveState();
+  setMainPinDefaultPosition();
   setAddress();
 
   mainMapPinDOM.addEventListener('mouseup', onMainMapPinMouseup);
