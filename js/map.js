@@ -25,6 +25,13 @@
   const resetButton = form.querySelector('.ad-form__reset');
   const addressField = form.querySelector('#address');
 
+  const dragBorder = {
+    left: DRAG_LIMIT.X.MIN,
+    right: DRAG_LIMIT.X.MAX - mainPin.offsetWidth,
+    top: DRAG_LIMIT.Y.MIN - mainPin.offsetHeight - MAIN_PIN_TAIL_LENGTH,
+    bottom: DRAG_LIMIT.Y.MAX - mainPin.offsetHeight - MAIN_PIN_TAIL_LENGTH,
+  };
+
   let isActive = false;
 
   const activateMap = () => {
@@ -160,18 +167,18 @@
         y: mainPin.offsetTop - shiftCoordinates.y,
       };
 
-      if (newCoordinates.x >= DRAG_LIMIT.X.MIN && (newCoordinates.x + mainPin.offsetWidth) <= DRAG_LIMIT.X.MAX) {
+      if (newCoordinates.x >= dragBorder.left && newCoordinates.x <= dragBorder.right) {
         mainPin.style.left = (newCoordinates.x) + 'px';
       }
 
-      if ((newCoordinates.y + mainPin.offsetHeight) >= DRAG_LIMIT.Y.MIN && (newCoordinates.y + mainPin.offsetHeight) <= DRAG_LIMIT.Y.MAX) {
+      if (newCoordinates.y >= dragBorder.top && newCoordinates.y <= dragBorder.bottom) {
         mainPin.style.top = (newCoordinates.y) + 'px';
       }
 
       setAddress();
     };
 
-    const onDraggedMainMapPinMouseUp = function () {
+    const onDraggedMainMapPinMouseUp = () => {
       setAddress();
 
       document.removeEventListener('mousemove', onMainMapPinMouseMove);
