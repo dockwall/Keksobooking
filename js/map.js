@@ -17,6 +17,8 @@
     Y: 375,
   };
 
+  const MAIN_PIN_TAIL_LENGTH = 16;
+
   const map = document.querySelector('.map');
   const mainPin = map.querySelector('.map__pin--main');
   const form = document.querySelector('.ad-form');
@@ -49,18 +51,18 @@
   };
 
   const setAddress = () => {
-    let MainPinLocationX;
-    let MainPinLocationY;
+    let MainPinAddressX;
+    let MainPinAddressY;
 
     if (isActive) {
-      MainPinLocationY = mainPin.offsetTop + mainPin.offsetHeight;
-      MainPinLocationX = mainPin.offsetLeft + Math.floor(mainPin.offsetWidth / 2);
+      MainPinAddressX = mainPin.offsetLeft + Math.floor(mainPin.offsetWidth / 2);
+      MainPinAddressY = mainPin.offsetTop + mainPin.offsetHeight + MAIN_PIN_TAIL_LENGTH;
     } else {
-      MainPinLocationY = mainPin.offsetTop + Math.floor(mainPin.offsetHeight / 2);
-      MainPinLocationX = mainPin.offsetLeft + Math.floor(mainPin.offsetWidth / 2);
+      MainPinAddressX = mainPin.offsetLeft + Math.floor(mainPin.offsetWidth / 2);
+      MainPinAddressY = mainPin.offsetTop + Math.floor(mainPin.offsetHeight / 2);
     }
 
-    addressField.value = `${MainPinLocationX}, ${MainPinLocationY}`;
+    addressField.value = `${MainPinAddressX}, ${MainPinAddressY}`;
   };
 
   const setMainPinDefaultPosition = () => {
