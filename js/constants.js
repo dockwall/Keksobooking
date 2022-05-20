@@ -16,7 +16,7 @@
       'palace',
       'flat',
       'house',
-      'bungalo'
+      'bungalow'
     ],
     TIMES: [
       '12:00',

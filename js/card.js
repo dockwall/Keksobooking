@@ -5,7 +5,7 @@
     palace: 'Дворец',
     flat: 'Квартира',
     house: 'Дом',
-    bungalo: 'Бунгало',
+    bungalow: 'Бунгало',
   };
 
   const templateCard = window.constants.template.querySelector('.map__card');
