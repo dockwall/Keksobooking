@@ -1,6 +1,21 @@
 'use strict';
 
 (function () {
+
+  const ROOM_CAPACITIES = {
+    '1': ['1'],
+    '2': ['1', '2'],
+    '3': ['1', '2', '3'],
+    '100': ['0'],
+  };
+
+  const MIN_PRICES = {
+    'bungalow': 0,
+    'flat': 1000,
+    'house': 5000,
+    'palace': 10000,
+  };
+
   const form = document.querySelector('.ad-form');
   const formFieldsets = form.querySelectorAll('fieldset');
   const titleField = form.querySelector('#title');
@@ -12,7 +27,7 @@
   const capacityField = form.querySelector('#capacity');
   const resetButton = form.querySelector('.ad-form__reset');
 
-  const checkFieldValidity = (fieldName) => {
+  const showFieldValidity = (fieldName) => {
     if (!fieldName.checkValidity()) {
       fieldName.style.borderColor = 'red';
     } else {
@@ -20,66 +35,27 @@
     }
   };
 
-  const setMinPrice = (typeValue) => {
-    let minPrice;
-
-    switch (typeValue) {
-      case 'bungalow':
-        minPrice = 0;
-        break;
-
-      case 'flat':
-        minPrice = 1000;
-        break;
-
-      case 'house':
-        minPrice = 5000;
-        break;
-
-      case 'palace':
-        minPrice = 10000;
-        break;
-    }
-
+  const setMinPrice = (typeFieldValue) => {
+    const minPrice = MIN_PRICES[typeFieldValue];
     priceField.min = minPrice;
     priceField.placeholder = minPrice;
   };
 
-  const setRoomCapacityError = (invalidValues) => {
-    if (invalidValues.includes(capacityField.value)) {
+  const showRoomCapacityError = (roomsCount) => {
+    const guestsCount = ROOM_CAPACITIES[roomsCount];
+
+    if (!guestsCount.includes(capacityField.value)) {
       capacityField.setCustomValidity('Выберите доступное количество гостей');
     } else {
       capacityField.setCustomValidity('');
     }
   };
 
-  const getInvalidCapacities = (roomsCount) => {
-    let invalidCapacities;
+  const disableInvalidCapacities = (roomsCount) => {
+    const guestsCount = ROOM_CAPACITIES[roomsCount];
 
-    switch (roomsCount) {
-      case '1':
-        invalidCapacities = ['3', '2', '0'];
-        break;
-
-      case '2':
-        invalidCapacities = ['3', '0'];
-        break;
-
-      case '3':
-        invalidCapacities = ['0'];
-        break;
-
-      case '100':
-        invalidCapacities = ['3', '2', '1'];
-        break;
-    }
-
-    return invalidCapacities;
-  };
-
-  const disableInvalidCapacities = (invalidValues) => {
     for (let i = 0; i < capacityField.children.length; i++) {
-      if (invalidValues.includes(capacityField.children[i].value)) {
+      if (!guestsCount.includes(capacityField.children[i].value)) {
         capacityField.children[i].setAttribute('disabled', '');
         capacityField.children[i].style.backgroundColor = 'silver';
       } else {
@@ -93,21 +69,21 @@
     activateForm();
     window.map.setAddress();
 
-    resetButton.addEventListener('click', onResetFormClick);
+    resetButton.addEventListener('click', onResetClick);
     window.map.mainPin.removeEventListener('mouseup', onMainPinMouseUp);
   };
 
   const onTitleFieldChange = (evt) => {
-    checkFieldValidity(evt.target);
+    showFieldValidity(evt.target);
   };
 
   const onTypeFieldChange = (evt) => {
     setMinPrice(evt.target.value);
-    checkFieldValidity(priceField);
+    showFieldValidity(priceField);
   };
 
   const onPriceFieldChange = (evt) => {
-    checkFieldValidity(evt.target);
+    showFieldValidity(evt.target);
   };
 
   const onTimeInFieldChange = () => {
@@ -119,26 +95,22 @@
   };
 
   const onRoomsCountFieldChange = (evt) => {
-    const invalidCapacityValues = getInvalidCapacities(evt.target.value);
-
-    setRoomCapacityError(invalidCapacityValues);
-    disableInvalidCapacities(invalidCapacityValues);
-    checkFieldValidity(capacityField);
+    showRoomCapacityError(evt.target.value);
+    disableInvalidCapacities(evt.target.value);
+    showFieldValidity(capacityField);
   };
 
   const onCapacityFieldChange = (evt) => {
-    const invalidCapacities = getInvalidCapacities(roomsCountField.value);
-
-    setRoomCapacityError(invalidCapacities);
-    checkFieldValidity(evt.target);
+    showRoomCapacityError(roomsCountField.value);
+    showFieldValidity(evt.target);
   };
 
-  const onResetFormClick = () => {
+  const onResetClick = () => {
     deactivateForm();
     window.map.setAddress();
 
     window.map.mainPin.addEventListener('mouseup', onMainPinMouseUp);
-    resetButton.removeEventListener('click', onResetFormClick);
+    resetButton.removeEventListener('click', onResetClick);
   };
 
   const activateForm = () => {
@@ -148,13 +120,12 @@
       element.removeAttribute('disabled');
     });
 
-    const invalidCapacityValues = getInvalidCapacities(roomsCountField.value);
-    setRoomCapacityError(invalidCapacityValues);
-    disableInvalidCapacities(invalidCapacityValues);
+    showRoomCapacityError(roomsCountField.value);
+    disableInvalidCapacities(roomsCountField.value);
 
-    checkFieldValidity(titleField);
-    checkFieldValidity(priceField);
-    checkFieldValidity(capacityField);
+    showFieldValidity(titleField);
+    showFieldValidity(priceField);
+    showFieldValidity(capacityField);
 
     setMinPrice(typeField.value);
 

@@ -51,10 +51,6 @@
 
     removeOfferPins();
     removeOfferCard();
-
-    map.removeEventListener('click', onOfferPinClick);
-
-    mainPin.addEventListener('mouseup', onMainPinMouseUp);
   };
 
   const setAddress = () => {
@@ -85,7 +81,8 @@
   };
 
   const removeOfferPins = () => {
-    window.pins.pinsArray.forEach(element => map.querySelector('.map__pins').removeChild(element));
+    const mapPinsDOM = map.querySelector('.map__pins');
+    window.pins.pinsArray.forEach(element => mapPinsDOM.removeChild(element));
   };
 
   const removeOfferCard = () => {
@@ -123,6 +120,10 @@
   const onResetClick = () => {
     deactivateMap();
     setMainPinDefaultPosition();
+
+    map.removeEventListener('click', onOfferPinClick);
+    resetButton.removeEventListener('click', onResetClick);
+    mainPin.addEventListener('mouseup', onMainPinMouseUp);
   };
 
   const onOfferPinClick = (evt) => {

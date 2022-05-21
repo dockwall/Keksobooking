@@ -9,43 +9,50 @@
   };
 
   const templateCard = window.constants.template.querySelector('.map__card');
-  const templateCardPhoto = templateCard.querySelector('.popup__photos').querySelector('img');
+  const templateCardPhoto = templateCard.querySelector('.popup__photos img');
+
+  const getCardPhotos = (offerObject) => {
+    const cardPhotosFragment = document.createDocumentFragment();
+
+    offerObject.offer.photos.forEach(element => {
+      const photoElement = templateCardPhoto.cloneNode('true');
+      photoElement.src = element;
+      cardPhotosFragment.appendChild(photoElement);
+    });
+
+    return cardPhotosFragment;
+  };
 
   window.card = {
     createCard(offerObject) {
-      const offerCardElement = templateCard.cloneNode('true');
-      const offerCardElementFeatures = offerCardElement.querySelector('.popup__features');
-      const offerCardElementPhotos = offerCardElement.querySelector('.popup__photos');
-      const offerCardPhotosFragment = document.createDocumentFragment();
+      const cardElement = templateCard.cloneNode('true');
+      const cardElementFeatures = cardElement.querySelector('.popup__features');
+      const cardElementPhotos = cardElement.querySelector('.popup__photos');
 
-      offerCardElement.querySelector('.popup__title').textContent = offerObject.offer.title;
-      offerCardElement.querySelector('.popup__text--address').textContent = offerObject.offer.address;
-      offerCardElement.querySelector('.popup__text--price').textContent = `${offerObject.offer.price}\u20BD/ночь`;
-      offerCardElement.querySelector('.popup__type').textContent = TYPES_DICT[offerObject.offer.type];
-      offerCardElement.querySelector('.popup__text--capacity').textContent = `${offerObject.offer.rooms} комнаты для ${offerObject.offer.guests} гостей`;
-      offerCardElement.querySelector('.popup__text--time').textContent = `Заезд после ${offerObject.offer.checkin}, выезд до ${offerObject.offer.checkout}`;
-      offerCardElement.querySelector('.popup__description').textContent = offerObject.offer.desrciption;
-      offerCardElement.querySelector('.popup__avatar').src = offerObject.author.avatar;
+      cardElement.querySelector('.popup__title').textContent = offerObject.offer.title;
+      cardElement.querySelector('.popup__text--address').textContent = offerObject.offer.address;
+      cardElement.querySelector('.popup__text--price').textContent = `${offerObject.offer.price}\u20BD/ночь`;
+      cardElement.querySelector('.popup__type').textContent = TYPES_DICT[offerObject.offer.type];
+      cardElement.querySelector('.popup__text--capacity').textContent = `${offerObject.offer.rooms} комнаты для ${offerObject.offer.guests} гостей`;
+      cardElement.querySelector('.popup__text--time').textContent = `Заезд после ${offerObject.offer.checkin}, выезд до ${offerObject.offer.checkout}`;
+      cardElement.querySelector('.popup__description').textContent = offerObject.offer.desrciption;
+      cardElement.querySelector('.popup__avatar').src = offerObject.author.avatar;
 
       window.constants.offerOptions.FEATURES.forEach(element => {
         const classToDelete = (offerObject.offer.features.includes(element)) ? '' : `.popup__feature--${element}`;
 
         if (classToDelete) {
-          const featureToDelete = offerCardElementFeatures.querySelector(classToDelete);
-          offerCardElementFeatures.removeChild(featureToDelete);
+          const featureToDelete = cardElementFeatures.querySelector(classToDelete);
+          cardElementFeatures.removeChild(featureToDelete);
         }
       });
 
-      offerObject.offer.photos.forEach(element => {
-        const photoElement = templateCardPhoto.cloneNode('true');
-        photoElement.src = element;
-        offerCardPhotosFragment.appendChild(photoElement);
-      });
+      const cardPhotosFragment = getCardPhotos(offerObject);
 
-      offerCardElementPhotos.removeChild(offerCardElementPhotos.querySelector('.popup__photo'));
-      offerCardElementPhotos.appendChild(offerCardPhotosFragment);
+      cardElementPhotos.removeChild(cardElementPhotos.querySelector('.popup__photo'));
+      cardElementPhotos.appendChild(cardPhotosFragment);
 
-      return offerCardElement;
+      return cardElement;
     },
   };
 })();

@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  const MAP_PIN_CSS = {
+  const MAP_PIN_SIZE = {
     WIDTH: 50,
     HEIGHT: 70,
   };
@@ -13,8 +13,8 @@
     const pinElement = templatePin.cloneNode('true');
     const pinElementImg = pinElement.querySelector('img');
 
-    pinElement.style.left = `${offerObject.offer.location.x - (MAP_PIN_CSS.WIDTH / 2)}px`;
-    pinElement.style.top = `${offerObject.offer.location.y - MAP_PIN_CSS.HEIGHT}px`;
+    pinElement.style.left = `${offerObject.offer.location.x - (MAP_PIN_SIZE.WIDTH / 2)}px`;
+    pinElement.style.top = `${offerObject.offer.location.y - MAP_PIN_SIZE.HEIGHT}px`;
     pinElementImg.src = offerObject.author.avatar;
     pinElementImg.alt = offerObject.offer.title;
 
