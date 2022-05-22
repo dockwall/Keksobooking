@@ -1,22 +1,6 @@
 'use strict';
 
 (function () {
-  const DRAG_LIMIT = {
-    X: {
-      MIN: 0,
-      MAX: 1200,
-    },
-    Y: {
-      MIN: 130,
-      MAX: 630,
-    },
-  };
-
-  const DEFAULT_MAIN_PIN_POSITION = {
-    X: 570,
-    Y: 375,
-  };
-
   const MAIN_PIN_TAIL_LENGTH = 16;
 
   const map = document.querySelector('.map');
@@ -24,13 +8,6 @@
   const form = document.querySelector('.ad-form');
   const resetButton = form.querySelector('.ad-form__reset');
   const addressField = form.querySelector('#address');
-
-  const dragBorder = {
-    left: DRAG_LIMIT.X.MIN,
-    right: DRAG_LIMIT.X.MAX - mainPin.offsetWidth,
-    top: DRAG_LIMIT.Y.MIN - mainPin.offsetHeight - MAIN_PIN_TAIL_LENGTH,
-    bottom: DRAG_LIMIT.Y.MAX - mainPin.offsetHeight - MAIN_PIN_TAIL_LENGTH,
-  };
 
   let isActive = false;
 
@@ -66,11 +43,6 @@
     }
 
     addressField.value = `${MainPinAddressX}, ${MainPinAddressY}`;
-  };
-
-  const setMainPinDefaultPosition = () => {
-    mainPin.style.left = DEFAULT_MAIN_PIN_POSITION.X + 'px';
-    mainPin.style.top = DEFAULT_MAIN_PIN_POSITION.Y + 'px';
   };
 
   const renderOfferPins = (pinsArray) => {
@@ -119,7 +91,6 @@
 
   const onResetClick = () => {
     deactivateMap();
-    setMainPinDefaultPosition();
 
     map.removeEventListener('click', onOfferPinClick);
     resetButton.removeEventListener('click', onResetClick);
@@ -146,55 +117,14 @@
     removeOfferCard();
   };
 
-  mainPin.addEventListener('mousedown', function (mouseDownEvt) {
-    let startCoordinates = {
-      x: mouseDownEvt.clientX,
-      y: mouseDownEvt.clientY,
-    };
-
-    const onMainMapPinMouseMove = (mouseMoveEvt) => {
-      const shiftCoordinates = {
-        x: startCoordinates.x - mouseMoveEvt.clientX,
-        y: startCoordinates.y - mouseMoveEvt.clientY,
-      };
-
-      startCoordinates = {
-        x: mouseMoveEvt.clientX,
-        y: mouseMoveEvt.clientY,
-      };
-
-      const newCoordinates = {
-        x: mainPin.offsetLeft - shiftCoordinates.x,
-        y: mainPin.offsetTop - shiftCoordinates.y,
-      };
-
-      if (newCoordinates.x >= dragBorder.left && newCoordinates.x <= dragBorder.right) {
-        mainPin.style.left = (newCoordinates.x) + 'px';
-      }
-
-      if (newCoordinates.y >= dragBorder.top && newCoordinates.y <= dragBorder.bottom) {
-        mainPin.style.top = (newCoordinates.y) + 'px';
-      }
-
-      setAddress();
-    };
-
-    const onDraggedMainMapPinMouseUp = () => {
-      setAddress();
-
-      document.removeEventListener('mousemove', onMainMapPinMouseMove);
-      document.removeEventListener('mouseup', onDraggedMainMapPinMouseUp);
-    };
-
-    document.addEventListener('mousemove', onMainMapPinMouseMove);
-    document.addEventListener('mouseup', onDraggedMainMapPinMouseUp);
-  });
-
   mainPin.addEventListener('mouseup', onMainPinMouseUp);
 
   window.map = {
     isActive: isActive,
     mainPin: mainPin,
     setAddress: setAddress,
+    mainPinTailLength: MAIN_PIN_TAIL_LENGTH,
+    form: form,
+    resetButton: resetButton,
   };
 })();
