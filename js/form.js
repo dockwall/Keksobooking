@@ -16,16 +16,14 @@
     'palace': 10000,
   };
 
-  const form = document.querySelector('.ad-form');
-  const formFieldsets = form.querySelectorAll('fieldset');
-  const titleField = form.querySelector('#title');
-  const typeField = form.querySelector('#type');
-  const priceField = form.querySelector('#price');
-  const timeInField = form.querySelector('#timein');
-  const timeOutField = form.querySelector('#timeout');
-  const roomsCountField = form.querySelector('#room_number');
-  const capacityField = form.querySelector('#capacity');
-  const resetButton = form.querySelector('.ad-form__reset');
+  const formFieldsets = window.map.form.querySelectorAll('fieldset');
+  const titleField = window.map.form.querySelector('#title');
+  const typeField = window.map.form.querySelector('#type');
+  const priceField = window.map.form.querySelector('#price');
+  const timeInField = window.map.form.querySelector('#timein');
+  const timeOutField = window.map.form.querySelector('#timeout');
+  const roomsCountField = window.map.form.querySelector('#room_number');
+  const capacityField = window.map.form.querySelector('#capacity');
 
   const showFieldValidity = (fieldName) => {
     if (!fieldName.checkValidity()) {
@@ -69,7 +67,7 @@
     activateForm();
     window.map.setAddress();
 
-    resetButton.addEventListener('click', onResetClick);
+    window.map.resetButton.addEventListener('click', onResetClick);
     window.map.mainPin.removeEventListener('mouseup', onMainPinMouseUp);
   };
 
@@ -110,11 +108,11 @@
     window.map.setAddress();
 
     window.map.mainPin.addEventListener('mouseup', onMainPinMouseUp);
-    resetButton.removeEventListener('click', onResetClick);
+    window.map.resetButton.removeEventListener('click', onResetClick);
   };
 
   const activateForm = () => {
-    form.classList.remove('ad-form--disabled');
+    window.map.form.classList.remove('ad-form--disabled');
 
     formFieldsets.forEach(element => {
       element.removeAttribute('disabled');
@@ -139,13 +137,13 @@
   };
 
   const deactivateForm = () => {
-    form.classList.add('ad-form--disabled');
+    window.map.form.classList.add('ad-form--disabled');
 
     formFieldsets.forEach(element => {
       element.setAttribute('disabled', '');
     });
 
-    form.reset();
+    window.map.form.reset();
 
     titleField.removeEventListener('change', onTitleFieldChange);
     typeField.removeEventListener('change', onTypeFieldChange);
