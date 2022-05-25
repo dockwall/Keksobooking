@@ -4,10 +4,17 @@
   const MAIN_PIN_TAIL_LENGTH = 16;
 
   const map = document.querySelector('.map');
+  const mapPins = map.querySelector('.map__pins');
   const mainPin = map.querySelector('.map__pin--main');
   const form = document.querySelector('.ad-form');
   const resetButton = form.querySelector('.ad-form__reset');
   const addressField = form.querySelector('#address');
+  const templatePin = window.constants.template.querySelector('.map__pin');
+
+  const MAP_PIN_SIZE = {
+    WIDTH: 50,
+    HEIGHT: 70,
+  };
 
   let isActive = false;
 
@@ -16,9 +23,7 @@
 
     map.classList.remove('map--faded');
 
-    renderOfferPins(window.pins.pinsArray);
-
-    map.addEventListener('click', onOfferPinClick);
+    window.backend.loadData(onSuccess, onError);
   };
 
   const deactivateMap = () => {
@@ -45,16 +50,39 @@
     addressField.value = `${MainPinAddressX}, ${MainPinAddressY}`;
   };
 
+  const generatePinElement = (offerObject) => {
+    const pinElement = templatePin.cloneNode('true');
+    const pinElementImg = pinElement.querySelector('img');
+
+    pinElement.style.left = `${offerObject.location.x - (MAP_PIN_SIZE.WIDTH / 2)}px`;
+    pinElement.style.top = `${offerObject.location.y - MAP_PIN_SIZE.HEIGHT}px`;
+    pinElementImg.src = offerObject.author.avatar;
+    pinElementImg.alt = offerObject.offer.title;
+
+    pinElement.addEventListener('click', function () {
+      removeOfferCard();
+      const currentOfferCard = window.card.createCard(offerObject);
+      currentOfferCard.querySelector('.popup__close').addEventListener('click', removeOfferCard);
+      renderOfferCard(currentOfferCard);
+    });
+
+    return pinElement;
+  };
+
   const renderOfferPins = (pinsArray) => {
     const pinsFragment = document.createDocumentFragment();
-    pinsArray.forEach(element => pinsFragment.appendChild(element));
+
+    pinsArray.forEach(element => {
+      console.log(element);
+      pinsFragment.appendChild(generatePinElement(element));
+    });
 
     map.querySelector('.map__pins').appendChild(pinsFragment);
   };
 
   const removeOfferPins = () => {
-    const mapPinsDOM = map.querySelector('.map__pins');
-    window.pins.pinsArray.forEach(element => mapPinsDOM.removeChild(element));
+    const allOfferPins = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+    allOfferPins.forEach(element => mapPins.removeChild(element));
   };
 
   const removeOfferCard = () => {
@@ -65,21 +93,16 @@
     }
   };
 
-  const getOfferIndex = (evt) => {
-    let indexOfferObject;
-    const parentNode = evt.target.parentNode;
-
-    if (evt.target.nodeName === 'IMG' && parentNode.classList.value === 'map__pin') {
-      indexOfferObject = window.pins.pinsArray.indexOf(parentNode);
-    } else if (evt.target.nodeName === 'BUTTON' && evt.target.classList.value === 'map__pin') {
-      indexOfferObject = window.pins.pinsArray.indexOf(evt.target);
-    }
-
-    return indexOfferObject;
-  };
-
   const renderOfferCard = (offerCardDOM) => {
     map.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', offerCardDOM);
+  };
+
+  const onSuccess = (response) => {
+    renderOfferPins(response);
+  };
+
+  const onError = (errorText) => {
+    console.log(errorText);
   };
 
   const onMainPinMouseUp = () => {
@@ -92,29 +115,8 @@
   const onResetClick = () => {
     deactivateMap();
 
-    map.removeEventListener('click', onOfferPinClick);
     resetButton.removeEventListener('click', onResetClick);
     mainPin.addEventListener('mouseup', onMainPinMouseUp);
-  };
-
-  const onOfferPinClick = (evt) => {
-    const indexOfferObject = getOfferIndex(evt);
-
-    if (indexOfferObject !== undefined) {
-      removeOfferCard();
-
-      const offerObject = window.data.offersArray[indexOfferObject];
-      const offerCardElement = window.card.createCard(offerObject);
-      const closePopupButton = offerCardElement.querySelector('.popup__close');
-
-      closePopupButton.addEventListener('click', onCloseOfferCardButtonClick);
-
-      renderOfferCard(offerCardElement);
-    }
-  };
-
-  const onCloseOfferCardButtonClick = () => {
-    removeOfferCard();
   };
 
   mainPin.addEventListener('mouseup', onMainPinMouseUp);
