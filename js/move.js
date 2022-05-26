@@ -1,32 +1,17 @@
 'use strict';
 
 (function () {
-  const DEFAULT_MAIN_PIN_POSITION = {
-    X: 570,
-    Y: 375,
-  };
-
-  const DRAG_LIMIT = {
-    X: {
-      MIN: 0,
-      MAX: 1200,
-    },
-    Y: {
-      MIN: 130,
-      MAX: 630,
-    },
-  };
-
   const dragBorder = {
-    left: DRAG_LIMIT.X.MIN,
-    right: DRAG_LIMIT.X.MAX - window.map.mainPin.offsetWidth,
-    top: DRAG_LIMIT.Y.MIN - window.map.mainPin.offsetHeight - window.map.mainPinTailLength,
-    bottom: DRAG_LIMIT.Y.MAX - window.map.mainPin.offsetHeight - window.map.mainPinTailLength,
+    left: window.constants.activeMapBorders.LEFT,
+    right: window.constants.activeMapBorders.RIGHT - window.map.mainPin.offsetWidth,
+    top: window.constants.activeMapBorders.TOP - window.map.mainPin.offsetHeight - window.constants.mainPinTailLength,
+    bottom: window.constants.activeMapBorders.BOTTOM - window.map.mainPin.offsetHeight - window.constants.mainPinTailLength,
   };
 
   const onResetClick = () => {
-    window.map.mainPin.style.left = DEFAULT_MAIN_PIN_POSITION.X + 'px';
-    window.map.mainPin.style.top = DEFAULT_MAIN_PIN_POSITION.Y + 'px';
+    window.map.mainPin.style.left = window.constants.defaultMainPinPosition.X + 'px';
+    window.map.mainPin.style.top = window.constants.defaultMainPinPosition.Y + 'px';
+    window.map.setAddress();
 
     window.map.resetButton.removeEventListener('click', onResetClick);
   };

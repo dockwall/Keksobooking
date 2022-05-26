@@ -2,20 +2,6 @@
 
 (function () {
 
-  const ROOM_CAPACITIES = {
-    '1': ['1'],
-    '2': ['1', '2'],
-    '3': ['1', '2', '3'],
-    '100': ['0'],
-  };
-
-  const MIN_PRICES = {
-    'bungalow': 0,
-    'flat': 1000,
-    'house': 5000,
-    'palace': 10000,
-  };
-
   const formFieldsets = window.map.form.querySelectorAll('fieldset');
   const titleField = window.map.form.querySelector('#title');
   const typeField = window.map.form.querySelector('#type');
@@ -34,13 +20,13 @@
   };
 
   const setMinPrice = (typeFieldValue) => {
-    const minPrice = MIN_PRICES[typeFieldValue];
+    const minPrice = window.constants.minPrices[typeFieldValue];
     priceField.min = minPrice;
     priceField.placeholder = minPrice;
   };
 
   const showRoomCapacityError = (roomsCount) => {
-    const guestsCount = ROOM_CAPACITIES[roomsCount];
+    const guestsCount = window.constants.roomCapacities[roomsCount];
 
     if (!guestsCount.includes(capacityField.value)) {
       capacityField.setCustomValidity('Выберите доступное количество гостей');
@@ -50,7 +36,7 @@
   };
 
   const disableInvalidCapacities = (roomsCount) => {
-    const guestsCount = ROOM_CAPACITIES[roomsCount];
+    const guestsCount = window.constants.roomCapacities[roomsCount];
 
     for (let i = 0; i < capacityField.children.length; i++) {
       if (!guestsCount.includes(capacityField.children[i].value)) {
@@ -65,7 +51,6 @@
 
   const onMainPinMouseUp = () => {
     activateForm();
-    window.map.setAddress();
 
     window.map.resetButton.addEventListener('click', onResetClick);
     window.map.mainPin.removeEventListener('mouseup', onMainPinMouseUp);
@@ -156,8 +141,6 @@
     setMinPrice(typeField.value);
 
   };
-
-  window.map.setAddress();
 
   window.map.mainPin.addEventListener('mouseup', onMainPinMouseUp);
 })();
