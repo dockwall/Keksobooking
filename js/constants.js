@@ -1,7 +1,11 @@
 'use strict';
 
 (function () {
-  const template = document.querySelector('template').content;
+  const KEY_CODES = {
+    ESC: 27,
+    ENTER: 13,
+  };
+
   const MAIN_PIN_TAIL_LENGTH = 16;
 
   const ALL_FEATURES = [
@@ -51,6 +55,8 @@
     BOTTOM: 630,
   };
 
+  const template = document.querySelector('template').content;
+
   window.constants = {
     template,
     allFeatures: ALL_FEATURES,
@@ -61,6 +67,7 @@
     minPrices: MIN_PRICES,
     defaultMainPinPosition: DEFAULT_MAIN_PIN_POSITION,
     activeMapBorders: ACTIVE_MAP_BORDERS,
+    keyCodes: KEY_CODES,
   };
 })();
 

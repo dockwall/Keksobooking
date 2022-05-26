@@ -61,4 +61,8 @@
     document.addEventListener('mousemove', onMainMapPinMouseMove);
     document.addEventListener('mouseup', onDraggedMainMapPinMouseUp);
   });
+
+  window.move = {
+    onResetClick,
+  };
 })();

@@ -89,5 +89,6 @@
     mainPin,
     form,
     resetButton,
+    deactivateMap,
   };
 })();

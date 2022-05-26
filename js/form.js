@@ -11,6 +11,7 @@
   const roomsCountField = window.map.form.querySelector('#room_number');
   const capacityField = window.map.form.querySelector('#capacity');
   const addressField = window.map.form.querySelector('#address');
+  const successSaveMessage = document.querySelector('.success');
 
   const showFieldValidity = (fieldName) => {
     if (!fieldName.checkValidity()) {
@@ -88,6 +89,7 @@
     timeOutField.addEventListener('change', onTimeOutFieldChange);
     roomsCountField.addEventListener('change', onRoomsCountFieldChange);
     capacityField.addEventListener('change', onCapacityFieldChange);
+    window.map.form.addEventListener('submit', onFormSubmit);
   };
 
   const deactivateForm = () => {
@@ -106,9 +108,27 @@
     timeOutField.removeEventListener('change', onTimeOutFieldChange);
     roomsCountField.removeEventListener('change', onRoomsCountFieldChange);
     capacityField.removeEventListener('change', onCapacityFieldChange);
+    window.map.form.removeEventListener('submit', onFormSubmit);
 
     setMinPrice(typeField.value);
 
+  };
+
+  const showSuccessMessage = () => {
+    successSaveMessage.classList.remove('hidden');
+
+    document.addEventListener('keydown', hideSuccessMessage);
+    document.addEventListener('click', hideSuccessMessage);
+  };
+
+  const hideSuccessMessage = (evt) => {
+    if (evt.type === 'keydown' && evt.keyCode !== window.constants.keyCodes.ESC) {
+      return;
+    }
+
+    successSaveMessage.classList.add('hidden');
+    document.removeEventListener('keydown', hideSuccessMessage);
+    document.removeEventListener('click', hideSuccessMessage);
   };
 
   const onMainPinMouseUp = () => {
@@ -155,6 +175,26 @@
 
     window.map.mainPin.addEventListener('mouseup', onMainPinMouseUp);
     window.map.resetButton.removeEventListener('click', onResetClick);
+  };
+
+  const onSuccessSave = () => {
+    onResetClick();
+    window.map.deactivateMap();
+    window.move.onResetClick();
+
+    showSuccessMessage();
+  };
+
+  const onErrorSave = (errorText) => {
+    console.log(errorText);
+  };
+
+  const onFormSubmit = (evt) => {
+    var formData = new FormData(window.map.form);
+
+    window.backend.saveForm(formData, onSuccessSave, onErrorSave);
+
+    evt.preventDefault();
   };
 
   setAddress();
