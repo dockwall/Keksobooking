@@ -10,6 +10,7 @@
   const timeOutField = window.map.form.querySelector('#timeout');
   const roomsCountField = window.map.form.querySelector('#room_number');
   const capacityField = window.map.form.querySelector('#capacity');
+  const addressField = window.map.form.querySelector('#address');
 
   const showFieldValidity = (fieldName) => {
     if (!fieldName.checkValidity()) {
@@ -49,51 +50,19 @@
     }
   };
 
-  const onMainPinMouseUp = () => {
-    activateForm();
+  const setAddress = () => {
+    let MainPinAddressX;
+    let MainPinAddressY;
 
-    window.map.resetButton.addEventListener('click', onResetClick);
-    window.map.mainPin.removeEventListener('mouseup', onMainPinMouseUp);
-  };
+    if (window.map.isActive) {
+      MainPinAddressX = window.map.mainPin.offsetLeft + Math.floor(window.map.mainPin.offsetWidth / 2);
+      MainPinAddressY = window.map.mainPin.offsetTop + window.map.mainPin.offsetHeight + window.constants.mainPinTailLength;
+    } else {
+      MainPinAddressX = window.map.mainPin.offsetLeft + Math.floor(window.map.mainPin.offsetWidth / 2);
+      MainPinAddressY = window.map.mainPin.offsetTop + Math.floor(window.map.mainPin.offsetHeight / 2);
+    }
 
-  const onTitleFieldChange = (evt) => {
-    showFieldValidity(evt.target);
-  };
-
-  const onTypeFieldChange = (evt) => {
-    setMinPrice(evt.target.value);
-    showFieldValidity(priceField);
-  };
-
-  const onPriceFieldChange = (evt) => {
-    showFieldValidity(evt.target);
-  };
-
-  const onTimeInFieldChange = () => {
-    timeOutField.value = timeInField.value;
-  };
-
-  const onTimeOutFieldChange = () => {
-    timeInField.value = timeOutField.value;
-  };
-
-  const onRoomsCountFieldChange = (evt) => {
-    showRoomCapacityError(evt.target.value);
-    disableInvalidCapacities(evt.target.value);
-    showFieldValidity(capacityField);
-  };
-
-  const onCapacityFieldChange = (evt) => {
-    showRoomCapacityError(roomsCountField.value);
-    showFieldValidity(evt.target);
-  };
-
-  const onResetClick = () => {
-    deactivateForm();
-    window.map.setAddress();
-
-    window.map.mainPin.addEventListener('mouseup', onMainPinMouseUp);
-    window.map.resetButton.removeEventListener('click', onResetClick);
+    addressField.value = `${MainPinAddressX}, ${MainPinAddressY}`;
   };
 
   const activateForm = () => {
@@ -142,5 +111,57 @@
 
   };
 
+  const onMainPinMouseUp = () => {
+    activateForm();
+
+    window.map.resetButton.addEventListener('click', onResetClick);
+    window.map.mainPin.removeEventListener('mouseup', onMainPinMouseUp);
+  };
+
+  const onTitleFieldChange = (evt) => {
+    showFieldValidity(evt.target);
+  };
+
+  const onTypeFieldChange = (evt) => {
+    setMinPrice(evt.target.value);
+    showFieldValidity(priceField);
+  };
+
+  const onPriceFieldChange = (evt) => {
+    showFieldValidity(evt.target);
+  };
+
+  const onTimeInFieldChange = () => {
+    timeOutField.value = timeInField.value;
+  };
+
+  const onTimeOutFieldChange = () => {
+    timeInField.value = timeOutField.value;
+  };
+
+  const onRoomsCountFieldChange = (evt) => {
+    showRoomCapacityError(evt.target.value);
+    disableInvalidCapacities(evt.target.value);
+    showFieldValidity(capacityField);
+  };
+
+  const onCapacityFieldChange = (evt) => {
+    showRoomCapacityError(roomsCountField.value);
+    showFieldValidity(evt.target);
+  };
+
+  const onResetClick = () => {
+    deactivateForm();
+
+    window.map.mainPin.addEventListener('mouseup', onMainPinMouseUp);
+    window.map.resetButton.removeEventListener('click', onResetClick);
+  };
+
+  setAddress();
+
   window.map.mainPin.addEventListener('mouseup', onMainPinMouseUp);
+
+  window.form = {
+    setAddress,
+  };
 })();

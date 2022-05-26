@@ -11,7 +11,7 @@
   const onResetClick = () => {
     window.map.mainPin.style.left = window.constants.defaultMainPinPosition.X + 'px';
     window.map.mainPin.style.top = window.constants.defaultMainPinPosition.Y + 'px';
-    window.map.setAddress();
+    window.form.setAddress();
 
     window.map.resetButton.removeEventListener('click', onResetClick);
   };
@@ -46,15 +46,13 @@
         window.map.mainPin.style.top = (newCoordinates.y) + 'px';
       }
 
-      window.map.setAddress();
+      window.form.setAddress();
     };
 
     const onDraggedMainMapPinMouseUp = () => {
-      window.map.setAddress();
+      window.form.setAddress();
 
-      if (!window.map.isActive) {
-        window.map.resetButton.addEventListener('click', onResetClick);
-      }
+      window.map.resetButton.addEventListener('click', onResetClick);
 
       document.removeEventListener('mousemove', onMainMapPinMouseMove);
       document.removeEventListener('mouseup', onDraggedMainMapPinMouseUp);

@@ -6,12 +6,9 @@
   const mainPin = map.querySelector('.map__pin--main');
   const form = document.querySelector('.ad-form');
   const resetButton = form.querySelector('.ad-form__reset');
-  const addressField = form.querySelector('#address');
-
-  let isActive = false;
 
   const activateMap = () => {
-    isActive = true;
+    window.map.isActive = true;
 
     map.classList.remove('map--faded');
 
@@ -19,27 +16,12 @@
   };
 
   const deactivateMap = () => {
-    isActive = false;
+    window.map.isActive = false;
 
     map.classList.add('map--faded');
 
     removeOfferPins();
     removeOfferCard();
-  };
-
-  const setAddress = () => {
-    let MainPinAddressX;
-    let MainPinAddressY;
-
-    if (isActive) {
-      MainPinAddressX = mainPin.offsetLeft + Math.floor(mainPin.offsetWidth / 2);
-      MainPinAddressY = mainPin.offsetTop + mainPin.offsetHeight + window.constants.mainPinTailLength;
-    } else {
-      MainPinAddressX = mainPin.offsetLeft + Math.floor(mainPin.offsetWidth / 2);
-      MainPinAddressY = mainPin.offsetTop + Math.floor(mainPin.offsetHeight / 2);
-    }
-
-    addressField.value = `${MainPinAddressX}, ${MainPinAddressY}`;
   };
 
   const renderOfferPins = (pinsArray) => {
@@ -102,13 +84,10 @@
 
   mainPin.addEventListener('mouseup', onMainPinMouseUp);
 
-  setAddress();
-
   window.map = {
-    isActive: isActive,
-    mainPin: mainPin,
-    setAddress: setAddress,
-    form: form,
-    resetButton: resetButton,
+    isActive: false,
+    mainPin,
+    form,
+    resetButton,
   };
 })();
