@@ -12,7 +12,7 @@
 
     map.classList.remove('map--faded');
 
-    window.backend.loadData(onSuccess, onError);
+    window.backend.loadData(onSuccessLoad, onErrorLoad);
   };
 
   const deactivateMap = () => {
@@ -60,12 +60,12 @@
     map.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', offerCardDOM);
   };
 
-  const onSuccess = (response) => {
+  const onSuccessLoad = (response) => {
     renderOfferPins(response);
   };
 
-  const onError = (errorText) => {
-    console.log(errorText);
+  const onErrorLoad = (errorText) => {
+    window.error.showErrorMessage(errorText);
   };
 
   const onMainPinMouseUp = () => {

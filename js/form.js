@@ -186,7 +186,7 @@
   };
 
   const onErrorSave = (errorText) => {
-    console.log(errorText);
+    window.error.showErrorMessage(errorText);
   };
 
   const onFormSubmit = (evt) => {
@@ -203,5 +203,6 @@
 
   window.form = {
     setAddress,
+    successSaveMessage,
   };
 })();
