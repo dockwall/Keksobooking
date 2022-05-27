@@ -6,9 +6,11 @@
   const createPinElement = (offerObject) => {
     const pinElement = templateOfferPin.cloneNode('true');
     const pinElementImg = pinElement.querySelector('img');
+    const locationX = window.utils.getRandomFromInterval(window.constants.offerLocationOptions.X);
+    const locationY = window.utils.getRandomFromInterval(window.constants.offerLocationOptions.Y);
 
-    pinElement.style.left = `${offerObject.location.x - (window.constants.offerPinSize.WIDTH / 2)}px`;
-    pinElement.style.top = `${offerObject.location.y - window.constants.offerPinSize.HEIGHT}px`;
+    pinElement.style.left = `${locationX - (window.constants.offerPinSize.WIDTH / 2)}px`;
+    pinElement.style.top = `${locationY - window.constants.offerPinSize.HEIGHT}px`;
     pinElementImg.src = offerObject.author.avatar;
     pinElementImg.alt = offerObject.offer.title;
 

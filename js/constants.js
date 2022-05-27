@@ -55,6 +55,17 @@
     BOTTOM: 630,
   };
 
+  const OFFER_LOCATION_OPTIONS = {
+    X: {
+      MIN: 300,
+      MAX: 900,
+    },
+    Y: {
+      MIN: 130,
+      MAX: 630,
+    },
+  };
+
   const template = document.querySelector('template').content;
 
   window.constants = {
@@ -68,6 +79,7 @@
     defaultMainPinPosition: DEFAULT_MAIN_PIN_POSITION,
     activeMapBorders: ACTIVE_MAP_BORDERS,
     keyCodes: KEY_CODES,
+    offerLocationOptions: OFFER_LOCATION_OPTIONS,
   };
 })();
 
