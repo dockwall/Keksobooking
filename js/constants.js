@@ -1,66 +1,73 @@
 'use strict';
 
 (function () {
-  const OFFER_OPTIONS = {
-    TITLES: [
-      'Большая уютная квартира',
-      'Маленькая неуютная квартира',
-      'Огромный прекрасный дворец',
-      'Маленький ужасный дворец',
-      'Красивый гостевой домик',
-      'Некрасивый негостеприимный домик',
-      'Уютное бунгало далеко от моря',
-      'Неуютное бунгало по колено в воде'
-    ],
-    TYPES: [
-      'palace',
-      'flat',
-      'house',
-      'bungalow'
-    ],
-    TIMES: [
-      '12:00',
-      '13:00',
-      '14:00'
-    ],
-    FEATURES: [
-      'wifi',
-      'dishwasher',
-      'parking',
-      'washer',
-      'elevator',
-      'conditioner'
-    ],
-    PHOTOS: [
-      'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
-      'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-      'http://o0.github.io/assets/images/tokyo/hotel3.jpg',
-    ],
-    LOCATION_X: {
-      MIN: 300,
-      MAX: 900,
-    },
-    LOCATION_Y: {
-      MIN: 130,
-      MAX: 630,
-    },
-    PRICES: {
-      MIN: 1000,
-      MAX: 1000000,
-    },
-    ROOMS: {
-      MIN: 1,
-      MAX: 5,
-    },
-    GUESTS: {
-      MIN: 1,
-      MAX: 15,
-    },
+  const KEY_CODES = {
+    ESC: 27,
+    ENTER: 13,
   };
 
+  const MAIN_PIN_TAIL_LENGTH = 16;
+
+  const ALL_FEATURES = [
+    'wifi',
+    'dishwasher',
+    'parking',
+    'washer',
+    'elevator',
+    'conditioner'
+  ];
+
+  const TYPES_DICT = {
+    palace: 'Дворец',
+    flat: 'Квартира',
+    house: 'Дом',
+    bungalow: 'Бунгало',
+  };
+
+  const OFFER_PIN_SIZE = {
+    WIDTH: 50,
+    HEIGHT: 70,
+  };
+
+  const ROOM_CAPACITIES = {
+    '1': ['1'],
+    '2': ['1', '2'],
+    '3': ['1', '2', '3'],
+    '100': ['0'],
+  };
+
+  const MIN_PRICES = {
+    'bungalow': 0,
+    'flat': 1000,
+    'house': 5000,
+    'palace': 10000,
+  };
+
+  const DEFAULT_MAIN_PIN_POSITION = {
+    X: 570,
+    Y: 375,
+  };
+
+  const ACTIVE_MAP_BORDERS = {
+    LEFT: 0,
+    RIGHT: 1200,
+    TOP: 130,
+    BOTTOM: 630,
+  };
+
+  const template = document.querySelector('template').content;
+
   window.constants = {
-    template: document.querySelector('template').content,
-    offerOptions: OFFER_OPTIONS,
+    template,
+    allFeatures: ALL_FEATURES,
+    typesDict: TYPES_DICT,
+    offerPinSize: OFFER_PIN_SIZE,
+    mainPinTailLength: MAIN_PIN_TAIL_LENGTH,
+    roomCapacities: ROOM_CAPACITIES,
+    minPrices: MIN_PRICES,
+    defaultMainPinPosition: DEFAULT_MAIN_PIN_POSITION,
+    activeMapBorders: ACTIVE_MAP_BORDERS,
+    keyCodes: KEY_CODES,
   };
 })();
 

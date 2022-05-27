@@ -1,35 +1,21 @@
 'use strict';
 
 (function () {
-  const MAP_PIN_SIZE = {
-    WIDTH: 50,
-    HEIGHT: 70,
-  };
+  const templateOfferPin = window.constants.template.querySelector('.map__pin');
 
-  const templatePin = window.constants.template.querySelector('.map__pin');
-  const pinsArray = [];
-
-  const generatePinElement = (offerObject) => {
-    const pinElement = templatePin.cloneNode('true');
+  const createPinElement = (offerObject) => {
+    const pinElement = templateOfferPin.cloneNode('true');
     const pinElementImg = pinElement.querySelector('img');
 
-    pinElement.style.left = `${offerObject.offer.location.x - (MAP_PIN_SIZE.WIDTH / 2)}px`;
-    pinElement.style.top = `${offerObject.offer.location.y - MAP_PIN_SIZE.HEIGHT}px`;
+    pinElement.style.left = `${offerObject.location.x - (window.constants.offerPinSize.WIDTH / 2)}px`;
+    pinElement.style.top = `${offerObject.location.y - window.constants.offerPinSize.HEIGHT}px`;
     pinElementImg.src = offerObject.author.avatar;
     pinElementImg.alt = offerObject.offer.title;
 
     return pinElement;
   };
 
-  const fillPinsArray = () => {
-    window.data.offersArray.forEach(element => {
-      pinsArray.push(generatePinElement(element));
-    });
-  };
-
-  fillPinsArray();
-
   window.pins = {
-    pinsArray: pinsArray,
+    createPinElement,
   };
 })();
