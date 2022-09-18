@@ -4,6 +4,7 @@
 - Наставник: Самостоятельно
 
 ---
+_Рабочая версия проекта на [GitHub Pages](https://dockwall.github.io/Keksobooking/)
 
 _Не удаляйте и не обращайте внимание на файлы:_<br>
 _`.editorconfig`, `.eslintrc`, `.gitattributes`, `.gitignore`, `.travis.yml`, `package-lock.json`, `package.json`._
